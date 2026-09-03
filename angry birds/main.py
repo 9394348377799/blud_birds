@@ -199,7 +199,7 @@ def draw_trajectory_preview():
   vx = pull_vector[0] * 8
   vy = pull_vector[1] * 8
   gx, gy = space.gravity
-  sim_dt = 1.0 / 60.0  # Match your main loop dt
+  sim_dt = 1.0 / 60.0  
   damping = space.damping
   for frame in range(120):  
       # Apply damping 
