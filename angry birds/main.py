@@ -21,12 +21,15 @@ def is_valid_position(pos):
 
 #Anchor POS
 ANCHOR_POS = (175, 450)
+PIG_POS = (800, 580)  # Positioned inside the hollow box
 
 static_anchor = pymunk.Body(body_type=pymunk.Body.STATIC)
 static_anchor.position = ANCHOR_POS
 
 ball_body = None
 ball_shape = None
+pig_body = None
+pig_shape = None
 is_dragging = False
 is_launched = False
 
@@ -54,12 +57,60 @@ def destroy_bird():
       is_dragging = False
 
 def create_piggy():
-  pig_body = pymunk.Body(body_type=pymunk.Body.DYNAMIC)
-  pig_body.position = (800, 600)
+  global pig_body, pig_shape
+  mass = 0.9
+  radius = 20
+  intertia = pymunk.moment_for_circle(mass, 0, radius)
+  pig_body = pymunk.Body(mass=mass, moment=intertia, body_type=pymunk.Body.DYNAMIC)
+  pig_body.position = (PIG_POS[0], PIG_POS[1])
   pig_shape = pymunk.Circle(pig_body, 20)
   pig_shape.elasticity = 0.5
   pig_shape.friction = 0.5
   space.add(pig_body, pig_shape)
+
+def create_wood_block():
+  #box dim
+  box_width = 80
+  box_height = 80
+  wall_thickness = 5
+  mass = 0.75  # Mass for the hollow box
+  
+
+  inertia = pymunk.moment_for_box(mass, (box_width, box_height))
+  
+  wood_body = pymunk.Body(mass=mass, moment=inertia, body_type=pymunk.Body.DYNAMIC)
+  wood_body.position = (PIG_POS[0], PIG_POS[1])
+
+  left = -box_width / 2
+  right = box_width / 2
+  top = -box_height / 2
+  bottom = box_height / 2
+  
+  #wall segments
+  # Bottom wall
+  bottom_shape = pymunk.Segment(wood_body, (left, bottom), (right, bottom), wall_thickness / 2)
+  bottom_shape.elasticity = 0.5
+  bottom_shape.friction = 0.5
+  space.add(wood_body, bottom_shape)
+  
+  # Top wall
+  top_shape = pymunk.Segment(wood_body, (left, top), (right, top), wall_thickness / 2)
+  top_shape.elasticity = 0.5
+  top_shape.friction = 0.5
+  space.add(top_shape)
+  
+  # Left wall
+  left_shape = pymunk.Segment(wood_body, (left, top), (left, bottom), wall_thickness / 2)
+  left_shape.elasticity = 0.5
+  left_shape.friction = 0.5
+  space.add(left_shape)
+  
+  # Right wall
+  right_shape = pymunk.Segment(wood_body, (right, top), (right, bottom), wall_thickness / 2)
+  right_shape.elasticity = 0.5
+  right_shape.friction = 0.5
+  space.add(right_shape)
+  
 
 def ground():
   ground_body = pymunk.Body(body_type=pymunk.Body.STATIC)
@@ -70,8 +121,9 @@ def ground():
 
 ground()
 create_bird()
+create_wood_block()
+create_piggy()
 ball_shape.mass = 0.5
-
 
 
 # Main Game Loop
@@ -120,7 +172,7 @@ while running:
     dx = mouse_pos[0] - ANCHOR_POS[0]
     dy = mouse_pos[1] - ANCHOR_POS[1]
     dist = math.hypot(dx, dy)
-    max_pull = 100
+    max_pull = 125
     if dist > max_pull and dist > 0:
       dx = (dx / dist) * max_pull
       dy = (dy / dist) * max_pull
