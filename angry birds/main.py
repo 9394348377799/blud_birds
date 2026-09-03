@@ -27,7 +27,7 @@ def is_valid_position(pos):
 
 #Anchor POS
 ANCHOR_POS = (175, 450)
-PIG_POS = (800, 550)  # Positioned inside the hollow box
+PIG_POS = (800, 530)  # Positioned inside the hollow box
 
 static_anchor = pymunk.Body(body_type=pymunk.Body.STATIC)
 static_anchor.position = ANCHOR_POS
@@ -38,10 +38,26 @@ pig_body = None
 pig_shape = None
 is_dragging = False
 is_launched = False
+environment_objects = []
 
 def reset_bird():
     destroy_bird()
     create_bird()
+
+def reset_environment():
+    destroy_environment()
+    create_pig_wood_block()
+    create_wood_block()
+    create_piggy()
+
+def destroy_environment():
+   global pig_body, pig_shape
+   for body, shapes in environment_objects:
+     space.remove(body, *shapes)
+   environment_objects.clear()
+   pig_body = None
+   pig_shape = None
+
 
 def create_bird():
   global ball_body, ball_shape, is_launched
@@ -81,6 +97,7 @@ def create_piggy():
       categories=PIG_CATEGORY, mask=0xFFFFFFFF ^ PIG_WOOD_CATEGORY
   )
   space.add(pig_body, pig_shape)
+  environment_objects.append((pig_body, [pig_shape]))
 
 def create_wood_block():
   #box dim
@@ -128,8 +145,9 @@ def create_wood_block():
   right_shape.elasticity = 0.5
   right_shape.friction = 0.5
   right_shape.color = wood_color
-  space.add(right_shape)
-  space.add(pymunk.Poly.create_box(wood_body, (box_width, box_height)))
+  collision_shape = pymunk.Poly.create_box(wood_body, (box_width, box_height))
+  space.add(right_shape, collision_shape)
+  environment_objects.append((wood_body, [bottom_shape, top_shape, left_shape, right_shape, collision_shape]))
 
 def create_pig_wood_block():
   #box dim
@@ -183,6 +201,7 @@ def create_pig_wood_block():
       categories=PIG_WOOD_CATEGORY, mask=0xFFFFFFFF ^ PIG_CATEGORY
   )
   space.add(collision_shape)
+  environment_objects.append((wood_body, [bottom_shape, top_shape, left_shape, right_shape, collision_shape]))
   
 
 def ground():
@@ -220,7 +239,7 @@ def draw_trajectory_preview():
       py += vy * sim_dt
       if py >= HEIGHT - 50:
           break
-      if frame % 5 == 0:
+      if frame % 2 == 0:
           pygame.draw.circle(screen, (255, 255, 255), (int(px), int(py)), 3)
 
 ground()
@@ -241,9 +260,12 @@ while running:
       running = False
 
     elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_r:
-                    reset_bird()
-                    ball_shape.mass = 0.5
+      if event.key == pygame.K_r:
+        reset_bird()
+        ball_shape.mass = 0.5
+      elif event.key == pygame.K_e:
+        reset_environment()
+
 
     elif event.type == pygame.MOUSEBUTTONDOWN:
       if not is_launched and ball_body:
