@@ -39,17 +39,9 @@ pig_shape = None
 is_dragging = False
 is_launched = False
 
-def reset_game():
-  global ball_body, ball_shape, pig_body, pig_shape, is_dragging, is_launched
-  destroy_bird()
-  if pig_body and pig_shape:
-      space.remove(pig_body, pig_shape)
-      pig_body = None
-      pig_shape = None
-  create_bird()
-  create_piggy()
-  is_dragging = False
-  is_launched = False
+def reset_bird():
+    destroy_bird()
+    create_bird()
 
 def create_bird():
   global ball_body, ball_shape, is_launched
@@ -228,7 +220,7 @@ def draw_trajectory_preview():
       py += vy * sim_dt
       if py >= HEIGHT - 50:
           break
-      if frame % 10 == 0:
+      if frame % 5 == 0:
           pygame.draw.circle(screen, (255, 255, 255), (int(px), int(py)), 3)
 
 ground()
@@ -247,6 +239,11 @@ while running:
   for event in pygame.event.get():
     if event.type == pygame.QUIT:
       running = False
+
+    elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    reset_bird()
+                    ball_shape.mass = 0.5
 
     elif event.type == pygame.MOUSEBUTTONDOWN:
       if not is_launched and ball_body:
