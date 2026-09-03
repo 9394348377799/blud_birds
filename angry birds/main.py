@@ -14,6 +14,8 @@ clock = pygame.time.Clock()
 space = pymunk.Space()
 space.damping = 0.7
 space.gravity = (0,900)
+PIG_CATEGORY = 2
+PIG_WOOD_CATEGORY = 4
 
 
 def is_valid_position(pos):
@@ -21,7 +23,7 @@ def is_valid_position(pos):
 
 #Anchor POS
 ANCHOR_POS = (175, 450)
-PIG_POS = (800, 300)  # Positioned inside the hollow box
+PIG_POS = (800, 550)  # Positioned inside the hollow box
 
 static_anchor = pymunk.Body(body_type=pymunk.Body.STATIC)
 static_anchor.position = ANCHOR_POS
@@ -33,6 +35,17 @@ pig_shape = None
 is_dragging = False
 is_launched = False
 
+def reset_game():
+  global ball_body, ball_shape, pig_body, pig_shape, is_dragging, is_launched
+  destroy_bird()
+  if pig_body and pig_shape:
+      space.remove(pig_body, pig_shape)
+      pig_body = None
+      pig_shape = None
+  create_bird()
+  create_piggy()
+  is_dragging = False
+  is_launched = False
 
 def create_bird():
   global ball_body, ball_shape, is_launched
@@ -58,7 +71,7 @@ def destroy_bird():
 
 def create_piggy():
   global pig_body, pig_shape
-  mass = 0.9
+  mass = 0.75
   radius = 20
   intertia = pymunk.moment_for_circle(mass, 0, radius)
   pig_body = pymunk.Body(mass=mass, moment=intertia, body_type=pymunk.Body.DYNAMIC)
@@ -66,19 +79,23 @@ def create_piggy():
   pig_shape = pymunk.Circle(pig_body, 20)
   pig_shape.elasticity = 0.5
   pig_shape.friction = 0.5
+  pig_shape.filter = pymunk.ShapeFilter(
+      categories=PIG_CATEGORY, mask=0xFFFFFFFF ^ PIG_WOOD_CATEGORY
+  )
   space.add(pig_body, pig_shape)
 
 def create_wood_block():
   #box dim
-  box_width = 80
-  box_height = 80
+  box_width = 60
+  box_height = 60
   wall_thickness = 5
-  mass = 0.75  # Mass for the hollow box
+  mass = 0.26  # Mass for the hollow box
   
 
   inertia = pymunk.moment_for_box(mass, (box_width, box_height))
   
   wood_body = pymunk.Body(mass=mass, moment=inertia, body_type=pymunk.Body.DYNAMIC)
+  wood_body.moment = float("inf")
   wood_body.position = (PIG_POS[0], PIG_POS[1] + 100)
 
   left = -box_width / 2
@@ -110,18 +127,20 @@ def create_wood_block():
   right_shape.elasticity = 0.5
   right_shape.friction = 0.5
   space.add(right_shape)
+  space.add(pymunk.Poly.create_box(wood_body, (box_width, box_height)))
 
 def create_pig_wood_block():
   #box dim
-  box_width = 80
-  box_height = 80
+  box_width = 60
+  box_height = 60
   wall_thickness = 5
-  mass = 0.75  # Mass for the hollow box
+  mass = 0.26  # Mass for the hollow box
   
 
   inertia = pymunk.moment_for_box(mass, (box_width, box_height))
   
   wood_body = pymunk.Body(mass=mass, moment=inertia, body_type=pymunk.Body.DYNAMIC)
+  wood_body.moment = float("inf")
   wood_body.position = (PIG_POS[0], PIG_POS[1])
 
   left = -box_width / 2
@@ -153,6 +172,11 @@ def create_pig_wood_block():
   right_shape.elasticity = 0.5
   right_shape.friction = 0.5
   space.add(right_shape)
+  collision_shape = pymunk.Poly.create_box(wood_body, (box_width, box_height))
+  collision_shape.filter = pymunk.ShapeFilter(
+      categories=PIG_WOOD_CATEGORY, mask=0xFFFFFFFF ^ PIG_CATEGORY
+  )
+  space.add(collision_shape)
   
 
 def ground():
