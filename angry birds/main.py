@@ -1,4 +1,5 @@
 import math
+import random
 import sys
 import pygame
 import pymunk
@@ -40,6 +41,7 @@ is_dragging = False
 is_launched = False
 environment_objects = []
 
+
 def reset_bird():
     destroy_bird()
     create_bird()
@@ -49,6 +51,24 @@ def reset_environment():
     create_pig_wood_block()
     create_wood_block()
     create_piggy()
+
+def generate_level():
+    destroy_environment()
+
+    block_count = random.randint(1, 10)
+
+    for i in range(block_count):
+
+        block_type = random.choice(["wood", "pig_wood"])
+
+        # Random position
+        x = random.randint(650, 950)
+        y = random.randint(300, 550)
+        if block_type == "wood":
+            create_wood_block((x, y))
+        else:
+            create_pig_wood_block((x, y))
+            create_piggy((x, y - 20))
 
 def destroy_environment():
    global pig_body, pig_shape
@@ -82,13 +102,13 @@ def destroy_bird():
       is_launched = False
       is_dragging = False
 
-def create_piggy():
+def create_piggy(pos):
   global pig_body, pig_shape
   mass = 0.5
   radius = 20
   intertia = pymunk.moment_for_circle(mass, 0, radius)
   pig_body = pymunk.Body(mass=mass, moment=intertia, body_type=pymunk.Body.DYNAMIC)
-  pig_body.position = (PIG_POS[0], PIG_POS[1])
+  pig_body.position = (pos)
   pig_shape = pymunk.Circle(pig_body, 20)
   pig_shape.elasticity = 0.5
   pig_shape.friction = 0.5
@@ -99,110 +119,191 @@ def create_piggy():
   space.add(pig_body, pig_shape)
   environment_objects.append((pig_body, [pig_shape]))
 
-def create_wood_block():
-  #box dim
-  box_width = 60
-  box_height = 60
-  wall_thickness = 5
-  mass = 1  # Mass for the hollow box
-  
+def create_wood_block(pos):
+    box_width = 60
+    box_height = 60
+    wall_thickness = 5
+    mass = 1
 
-  inertia = pymunk.moment_for_box(mass, (box_width, box_height))
-  
-  wood_body = pymunk.Body(mass=mass, moment=inertia, body_type=pymunk.Body.DYNAMIC)
-  wood_body.moment = float("inf")
-  wood_body.position = (PIG_POS[0], PIG_POS[1] + 60)
+    inertia = pymunk.moment_for_box(
+        mass, (box_width, box_height)
+    )
 
-  left = -box_width / 2
-  right = box_width / 2
-  top = -box_height / 2
-  bottom = box_height / 2
-  
-  #wall segments
-  # Bottom wall
-  bottom_shape = pymunk.Segment(wood_body, (left, bottom), (right, bottom), wall_thickness / 2)
-  bottom_shape.elasticity = 0.5
-  bottom_shape.friction = 0.5
-  bottom_shape.color = wood_color
-  space.add(wood_body, bottom_shape)
-  
-  # Top wall
-  top_shape = pymunk.Segment(wood_body, (left, top), (right, top), wall_thickness / 2)
-  top_shape.elasticity = 0.5
-  top_shape.friction = 0.5
-  top_shape.color = wood_color
-  space.add(top_shape)
-  
-  # Left wall
-  left_shape = pymunk.Segment(wood_body, (left, top), (left, bottom), wall_thickness / 2)
-  left_shape.elasticity = 0.5
-  left_shape.friction = 0.5
-  left_shape.color = wood_color
-  space.add(left_shape)
-  
-  # Right wall
-  right_shape = pymunk.Segment(wood_body, (right, top), (right, bottom), wall_thickness / 2)
-  right_shape.elasticity = 0.5
-  right_shape.friction = 0.5
-  right_shape.color = wood_color
-  collision_shape = pymunk.Poly.create_box(wood_body, (box_width, box_height))
-  space.add(right_shape, collision_shape)
-  environment_objects.append((wood_body, [bottom_shape, top_shape, left_shape, right_shape, collision_shape]))
+    wood_body = pymunk.Body(
+        mass=mass,
+        moment=inertia,
+        body_type=pymunk.Body.DYNAMIC
+    )
 
-def create_pig_wood_block():
-  #box dim
-  box_width = 60
-  box_height = 60
-  wall_thickness = 5
-  mass = 1  # Mass for the hollow box
-  
+    wood_body.moment = float("inf")
+    wood_body.position = pos
 
-  inertia = pymunk.moment_for_box(mass, (box_width, box_height))
-  
-  wood_body = pymunk.Body(mass=mass, moment=inertia, body_type=pymunk.Body.DYNAMIC)
-  wood_body.moment = float("inf")
-  wood_body.position = (PIG_POS[0], PIG_POS[1])
+    left = -box_width / 2
+    right = box_width / 2
+    top = -box_height / 2
+    bottom = box_height / 2
 
-  left = -box_width / 2
-  right = box_width / 2
-  top = -box_height / 2
-  bottom = box_height / 2
-  
-  #wall segments
-  # Bottom wall
-  bottom_shape = pymunk.Segment(wood_body, (left, bottom), (right, bottom), wall_thickness / 2)
-  bottom_shape.elasticity = 0.5
-  bottom_shape.friction = 0.5
-  bottom_shape.color = wood_color
-  space.add(wood_body, bottom_shape)
-  
-  # Top wall
-  top_shape = pymunk.Segment(wood_body, (left, top), (right, top), wall_thickness / 2)
-  top_shape.elasticity = 0.5
-  top_shape.friction = 0.5
-  top_shape.color = wood_color
-  space.add(top_shape)
-  
-  # Left wall
-  left_shape = pymunk.Segment(wood_body, (left, top), (left, bottom), wall_thickness / 2)
-  left_shape.elasticity = 0.5
-  left_shape.friction = 0.5
-  left_shape.color = wood_color
-  space.add(left_shape)
-  
-  # Right wall
-  right_shape = pymunk.Segment(wood_body, (right, top), (right, bottom), wall_thickness / 2)
-  right_shape.elasticity = 0.5
-  right_shape.friction = 0.5
-  right_shape.color = wood_color
-  space.add(right_shape)
-  collision_shape = pymunk.Poly.create_box(wood_body, (box_width, box_height))
-  collision_shape.filter = pymunk.ShapeFilter(
-      categories=PIG_WOOD_CATEGORY, mask=0xFFFFFFFF ^ PIG_CATEGORY
-  )
-  space.add(collision_shape)
-  environment_objects.append((wood_body, [bottom_shape, top_shape, left_shape, right_shape, collision_shape]))
-  
+    # Bottom
+    bottom_shape = pymunk.Segment(
+        wood_body,
+        (left, bottom),
+        (right, bottom),
+        wall_thickness / 2
+    )
+
+    # Top
+    top_shape = pymunk.Segment(
+        wood_body,
+        (left, top),
+        (right, top),
+        wall_thickness / 2
+    )
+
+    # Left
+    left_shape = pymunk.Segment(
+        wood_body,
+        (left, top),
+        (left, bottom),
+        wall_thickness / 2
+    )
+
+    # Right
+    right_shape = pymunk.Segment(
+        wood_body,
+        (right, top),
+        (right, bottom),
+        wall_thickness / 2
+    )
+
+    # Set properties
+    for shape in [
+        bottom_shape,
+        top_shape,
+        left_shape,
+        right_shape
+    ]:
+        shape.elasticity = 0.5
+        shape.friction = 0.5
+        shape.color = wood_color
+
+    # Add only the four walls
+    space.add(
+        wood_body,
+        bottom_shape,
+        top_shape,
+        left_shape,
+        right_shape
+    )
+
+    environment_objects.append((
+        wood_body,
+        [
+            bottom_shape,
+            top_shape,
+            left_shape,
+            right_shape
+        ]
+    ))
+
+def create_pig_wood_block(pos):
+    box_width = 60
+    box_height = 60
+    wall_thickness = 5
+    mass = 1
+
+    inertia = pymunk.moment_for_box(
+        mass, (box_width, box_height)
+    )
+
+    wood_body = pymunk.Body(
+        mass=mass,
+        moment=inertia,
+        body_type=pymunk.Body.DYNAMIC
+    )
+
+    wood_body.moment = float("inf")
+    wood_body.position = pos
+
+    left = -box_width / 2
+    right = box_width / 2
+    top = -box_height / 2
+    bottom = box_height / 2
+
+    no_pig_filter = pymunk.ShapeFilter(
+        categories=PIG_WOOD_CATEGORY,
+        mask=0xFFFFFFFF ^ PIG_CATEGORY
+    )
+
+    pig_bottom_filter = pymunk.ShapeFilter(
+        categories=PIG_WOOD_CATEGORY,
+        mask=0xFFFFFFFF
+    )
+
+
+    # Bottom
+    bottom_shape = pymunk.Segment(
+        wood_body,
+        (left, bottom),
+        (right, bottom),
+        wall_thickness / 2
+    )
+
+    # Top
+    top_shape = pymunk.Segment(
+        wood_body,
+        (left, top),
+        (right, top),
+        wall_thickness / 2
+    )
+
+    # Left
+    left_shape = pymunk.Segment(
+        wood_body,
+        (left, top),
+        (left, bottom),
+        wall_thickness / 2
+    )
+
+    # Right
+    right_shape = pymunk.Segment(
+        wood_body,
+        (right, top),
+        (right, bottom),
+        wall_thickness / 2
+    )
+
+    for shape in [
+        bottom_shape,
+        top_shape,
+        left_shape,
+        right_shape
+    ]:
+        shape.elasticity = 0.5
+        shape.friction = 0.5
+        shape.color = wood_color
+    bottom_shape.filter = pig_bottom_filter
+
+    top_shape.filter = no_pig_filter
+    left_shape.filter = no_pig_filter
+    right_shape.filter = no_pig_filter
+
+    space.add(
+        wood_body,
+        bottom_shape,
+        top_shape,
+        left_shape,
+        right_shape
+    )
+
+    environment_objects.append((
+        wood_body,
+        [
+            bottom_shape,
+            top_shape,
+            left_shape,
+            right_shape
+        ]
+    ))
 
 def ground():
   ground_body = pymunk.Body(body_type=pymunk.Body.STATIC)
@@ -244,9 +345,7 @@ def draw_trajectory_preview():
 
 ground()
 create_bird()
-create_pig_wood_block()
-create_wood_block()
-create_piggy()
+generate_level()
 ball_shape.mass = 0.5
 
 
@@ -264,7 +363,7 @@ while running:
         reset_bird()
         ball_shape.mass = 0.5
       elif event.key == pygame.K_e:
-        reset_environment()
+        generate_level()
 
 
     elif event.type == pygame.MOUSEBUTTONDOWN:
