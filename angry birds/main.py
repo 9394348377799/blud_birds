@@ -71,7 +71,7 @@ def destroy_bird():
 
 def create_piggy():
   global pig_body, pig_shape
-  mass = 0.75
+  mass = 0.3
   radius = 20
   intertia = pymunk.moment_for_circle(mass, 0, radius)
   pig_body = pymunk.Body(mass=mass, moment=intertia, body_type=pymunk.Body.DYNAMIC)
@@ -186,6 +186,36 @@ def ground():
   ground_shape.friction = 1.0
   space.add(ground_body, ground_shape)
 
+def draw_trajectory_preview():
+  if not ball_body or not is_dragging:
+    return
+
+  pull_vector = (
+      ANCHOR_POS[0] - ball_body.position.x,
+      ANCHOR_POS[1] - ball_body.position.y,
+  )
+
+  px, py = ball_body.position.x, ball_body.position.y
+  vx = pull_vector[0] * 8
+  vy = pull_vector[1] * 8
+  gx, gy = space.gravity
+  sim_dt = 1.0 / 60.0  # Match your main loop dt
+  damping = space.damping
+  for frame in range(120):  
+      # Apply damping 
+      vx *= math.pow(damping, sim_dt)
+      vy *= math.pow(damping, sim_dt)
+      # Apply gravity
+      vx += gx * sim_dt
+      vy += gy * sim_dt
+      # Advance position
+      px += vx * sim_dt
+      py += vy * sim_dt
+      if py >= HEIGHT - 50:
+          break
+      if frame % 10 == 0:
+          pygame.draw.circle(screen, (200, 200, 200), (int(px), int(py)), 3)
+
 ground()
 create_bird()
 create_pig_wood_block()
@@ -265,8 +295,10 @@ while running:
         (int(ball_body.position.x), int(ball_body.position.y)),
         4,
     )
+    draw_trajectory_preview()
 
-      
+
+    
   # Render Pymunk objects via debug drawer
   draw_options = pymunk.pygame_util.DrawOptions(screen)
   space.debug_draw(draw_options)
