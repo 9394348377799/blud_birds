@@ -55,7 +55,7 @@ def reset_environment():
 def generate_level():
     destroy_environment()
 
-    block_count = random.randint(1, 10)
+    block_count = random.randint(2,10)
 
     for i in range(block_count):
 
@@ -68,7 +68,7 @@ def generate_level():
             create_wood_block((x, y))
         else:
             create_pig_wood_block((x, y))
-            create_piggy((x, y - 20))
+            create_piggy((x, y))
 
 def destroy_environment():
    global pig_body, pig_shape
@@ -229,10 +229,6 @@ def create_pig_wood_block(pos):
     top = -box_height / 2
     bottom = box_height / 2
 
-    no_pig_filter = pymunk.ShapeFilter(
-        categories=PIG_WOOD_CATEGORY,
-        mask=0xFFFFFFFF ^ PIG_CATEGORY
-    )
 
     pig_bottom_filter = pymunk.ShapeFilter(
         categories=PIG_WOOD_CATEGORY,
@@ -282,10 +278,6 @@ def create_pig_wood_block(pos):
         shape.friction = 0.5
         shape.color = wood_color
     bottom_shape.filter = pig_bottom_filter
-
-    top_shape.filter = no_pig_filter
-    left_shape.filter = no_pig_filter
-    right_shape.filter = no_pig_filter
 
     space.add(
         wood_body,
