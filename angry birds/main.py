@@ -68,7 +68,7 @@ def create_piggy():
   pig_shape.friction = 0.5
   space.add(pig_body, pig_shape)
 
-def create_wood_block():
+def create_pig_wood_block():
   #box dim
   box_width = 80
   box_height = 80
@@ -121,7 +121,7 @@ def ground():
 
 ground()
 create_bird()
-create_wood_block()
+create_pig_wood_block()
 create_piggy()
 ball_shape.mass = 0.5
 
@@ -155,15 +155,15 @@ while running:
             ANCHOR_POS[1] - ball_body.position.y,
         )
 
-        # 1. Switch to dynamic first
+        #Switch to dynamic first
         ball_body.body_type = pymunk.Body.DYNAMIC 
         ball_body.mass = 0.5
         ball_body.inertia = pymunk.moment_for_circle(0.5, 0, 15)
 
-        # 2. Set explicit launch velocity
+        #Set explicit launch velocity
         ball_body.velocity = (pull_vector[0] * 8, pull_vector[1] * 8)
 
-        # 3. Update state flags last
+        #Update state flags last
         is_launched = True 
         is_dragging = False
 
