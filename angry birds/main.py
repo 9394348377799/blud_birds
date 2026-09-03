@@ -104,7 +104,7 @@ def create_wood_block():
   box_width = 60
   box_height = 60
   wall_thickness = 5
-  mass = 0.26  # Mass for the hollow box
+  mass = 1  # Mass for the hollow box
   
 
   inertia = pymunk.moment_for_box(mass, (box_width, box_height))
@@ -154,7 +154,7 @@ def create_pig_wood_block():
   box_width = 60
   box_height = 60
   wall_thickness = 5
-  mass = 0.26  # Mass for the hollow box
+  mass = 1  # Mass for the hollow box
   
 
   inertia = pymunk.moment_for_box(mass, (box_width, box_height))
