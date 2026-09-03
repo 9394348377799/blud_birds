@@ -43,7 +43,6 @@ def create_bird():
   space.add(ball_body, ball_shape)
   is_launched = False
 
-
 def destroy_bird():
   global ball_body, ball_shape, is_launched, is_dragging
   if ball_body and ball_shape:
@@ -61,9 +60,17 @@ def create_piggy():
   pig_shape.friction = 0.5
   space.add(pig_body, pig_shape)
 
+def ground():
+  ground_body = pymunk.Body(body_type=pymunk.Body.STATIC)
+  ground_shape = pymunk.Segment(ground_body, (0, HEIGHT - 50), (WIDTH, HEIGHT - 50), 5)
+  ground_shape.elasticity = 0.5
+  ground_shape.friction = 1.0
+  space.add(ground_body, ground_shape)
 
 create_bird()
 ball_shape.mass = 0.5
+ground()
+
 
 # Main Game Loop
 running = True
