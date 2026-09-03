@@ -5,7 +5,7 @@ import pymunk
 import pymunk.pygame_util
 
 pygame.init()
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 1080, 720
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Pymunk Slingshot Demo")
 clock = pygame.time.Clock()
@@ -13,7 +13,7 @@ clock = pygame.time.Clock()
 space = pymunk.Space()
 space.gravity = (0,450)
 
-# Helper function to check if position is valid (not NaN)
+
 def is_valid_position(pos):
   return not (math.isnan(pos[0]) or math.isnan(pos[1]))  
 
@@ -29,7 +29,7 @@ is_dragging = False
 is_launched = False
 
 
-def create_ball():
+def create_bird():
   global ball_body, ball_shape, is_launched
   mass = 0.5
   radius = 15
@@ -43,8 +43,17 @@ def create_ball():
   is_launched = False
 
 
-# Spawn the first ball
-create_ball()
+def destroy_bird():
+  global ball_body, ball_shape, is_launched, is_dragging
+  if ball_body and ball_shape:
+      space.remove(ball_body, ball_shape)
+      ball_body = None
+      ball_shape = None
+      is_launched = False
+      is_dragging = False
+
+
+create_bird()
 ball_shape.mass = 0.5
 
 # Main Game Loop
@@ -103,6 +112,9 @@ while running:
       ball_body.velocity = (0, 0)  
 
   space.step(dt)
+  if ball_body and is_launched:
+    if ball_body.position.y > HEIGHT +100 or ball_body.position.x > WIDTH + 100 or ball_body.position.x < -100:
+      destroy_bird()
 
 
   screen.fill((240, 240, 240))
