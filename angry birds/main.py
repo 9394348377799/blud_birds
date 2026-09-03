@@ -84,7 +84,7 @@ def destroy_bird():
 
 def create_piggy():
   global pig_body, pig_shape
-  mass = 0.3
+  mass = 0.5
   radius = 20
   intertia = pymunk.moment_for_circle(mass, 0, radius)
   pig_body = pymunk.Body(mass=mass, moment=intertia, body_type=pymunk.Body.DYNAMIC)
