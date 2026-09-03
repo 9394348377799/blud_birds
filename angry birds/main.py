@@ -27,7 +27,7 @@ def is_valid_position(pos):
 
 #Anchor POS
 ANCHOR_POS = (175, 450)
-PIG_POS = (800, 530)  # Positioned inside the hollow box
+PIG_POS = (800, 570)  # Positioned inside the hollow box
 
 static_anchor = pymunk.Body(body_type=pymunk.Body.STATIC)
 static_anchor.position = ANCHOR_POS
@@ -111,7 +111,7 @@ def create_wood_block():
   
   wood_body = pymunk.Body(mass=mass, moment=inertia, body_type=pymunk.Body.DYNAMIC)
   wood_body.moment = float("inf")
-  wood_body.position = (PIG_POS[0], PIG_POS[1] + 100)
+  wood_body.position = (PIG_POS[0], PIG_POS[1] + 60)
 
   left = -box_width / 2
   right = box_width / 2
