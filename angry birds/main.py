@@ -6,19 +6,20 @@ import pymunk.pygame_util
 
 pygame.init()
 WIDTH, HEIGHT = 1080, 720
+color = (0, 0, 0)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Pymunk Slingshot Demo")
 clock = pygame.time.Clock()
 
 space = pymunk.Space()
-space.gravity = (0,450)
+space.gravity = (0,900)
 
 
 def is_valid_position(pos):
   return not (math.isnan(pos[0]) or math.isnan(pos[1]))  
 
 #Anchor POS
-ANCHOR_POS = (200, 400)
+ANCHOR_POS = (175, 450)
 
 static_anchor = pymunk.Body(body_type=pymunk.Body.STATIC)
 static_anchor.position = ANCHOR_POS
@@ -51,6 +52,14 @@ def destroy_bird():
       ball_shape = None
       is_launched = False
       is_dragging = False
+
+def create_piggy():
+  pig_body = pymunk.Body(body_type=pymunk.Body.DYNAMIC)
+  pig_body.position = (800, 600)
+  pig_shape = pymunk.Circle(pig_body, 20)
+  pig_shape.elasticity = 0.5
+  pig_shape.friction = 0.5
+  space.add(pig_body, pig_shape)
 
 
 create_bird()
@@ -117,7 +126,7 @@ while running:
       destroy_bird()
 
 
-  screen.fill((240, 240, 240))
+  screen.fill(color)
 
   if is_dragging:
     pygame.draw.line(
