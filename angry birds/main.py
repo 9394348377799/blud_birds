@@ -12,6 +12,7 @@ pygame.display.set_caption("Pymunk Slingshot Demo")
 clock = pygame.time.Clock()
 
 space = pymunk.Space()
+space.damping = 0.7
 space.gravity = (0,900)
 
 
@@ -67,9 +68,10 @@ def ground():
   ground_shape.friction = 1.0
   space.add(ground_body, ground_shape)
 
+ground()
 create_bird()
 ball_shape.mass = 0.5
-ground()
+
 
 
 # Main Game Loop
@@ -147,11 +149,11 @@ while running:
       
   # Render Pymunk objects via debug drawer
   draw_options = pymunk.pygame_util.DrawOptions(screen)
-  # Validate ball position before drawing
-  if ball_body and is_valid_position(ball_body.position):
-    space.debug_draw(draw_options)
-  elif ball_body and not is_valid_position(ball_body.position):
-    # Reset position if it becomes invalid (NaN)
+  space.debug_draw(draw_options)
+  
+  # Validate ball position if it exists
+  if ball_body and not is_valid_position(ball_body.position):
+
     ball_body.position = ANCHOR_POS
     ball_body.velocity = (0, 0)
 
