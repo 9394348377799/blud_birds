@@ -7,6 +7,10 @@ import pymunk.pygame_util
 pygame.init()
 WIDTH, HEIGHT = 1080, 720
 color = (0, 0, 0)
+ground_color = (51, 0, 0)
+bird_color = (51, 51, 255, 255)
+pig_color = (254, 204, 153, 255)
+wood_color = (150, 90, 40, 255)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Pymunk Slingshot Demo")
 clock = pygame.time.Clock()
@@ -57,6 +61,7 @@ def create_bird():
   ball_shape = pymunk.Circle(ball_body, radius)
   ball_shape.elasticity = 0.7
   ball_shape.friction = 0.5
+  ball_shape.color = bird_color
   space.add(ball_body, ball_shape)
   is_launched = False
 
@@ -79,6 +84,7 @@ def create_piggy():
   pig_shape = pymunk.Circle(pig_body, 20)
   pig_shape.elasticity = 0.5
   pig_shape.friction = 0.5
+  pig_shape.color = pig_color
   pig_shape.filter = pymunk.ShapeFilter(
       categories=PIG_CATEGORY, mask=0xFFFFFFFF ^ PIG_WOOD_CATEGORY
   )
@@ -108,24 +114,28 @@ def create_wood_block():
   bottom_shape = pymunk.Segment(wood_body, (left, bottom), (right, bottom), wall_thickness / 2)
   bottom_shape.elasticity = 0.5
   bottom_shape.friction = 0.5
+  bottom_shape.color = wood_color
   space.add(wood_body, bottom_shape)
   
   # Top wall
   top_shape = pymunk.Segment(wood_body, (left, top), (right, top), wall_thickness / 2)
   top_shape.elasticity = 0.5
   top_shape.friction = 0.5
+  top_shape.color = wood_color
   space.add(top_shape)
   
   # Left wall
   left_shape = pymunk.Segment(wood_body, (left, top), (left, bottom), wall_thickness / 2)
   left_shape.elasticity = 0.5
   left_shape.friction = 0.5
+  left_shape.color = wood_color
   space.add(left_shape)
   
   # Right wall
   right_shape = pymunk.Segment(wood_body, (right, top), (right, bottom), wall_thickness / 2)
   right_shape.elasticity = 0.5
   right_shape.friction = 0.5
+  right_shape.color = wood_color
   space.add(right_shape)
   space.add(pymunk.Poly.create_box(wood_body, (box_width, box_height)))
 
@@ -153,24 +163,28 @@ def create_pig_wood_block():
   bottom_shape = pymunk.Segment(wood_body, (left, bottom), (right, bottom), wall_thickness / 2)
   bottom_shape.elasticity = 0.5
   bottom_shape.friction = 0.5
+  bottom_shape.color = wood_color
   space.add(wood_body, bottom_shape)
   
   # Top wall
   top_shape = pymunk.Segment(wood_body, (left, top), (right, top), wall_thickness / 2)
   top_shape.elasticity = 0.5
   top_shape.friction = 0.5
+  top_shape.color = wood_color
   space.add(top_shape)
   
   # Left wall
   left_shape = pymunk.Segment(wood_body, (left, top), (left, bottom), wall_thickness / 2)
   left_shape.elasticity = 0.5
   left_shape.friction = 0.5
+  left_shape.color = wood_color
   space.add(left_shape)
   
   # Right wall
   right_shape = pymunk.Segment(wood_body, (right, top), (right, bottom), wall_thickness / 2)
   right_shape.elasticity = 0.5
   right_shape.friction = 0.5
+  right_shape.color = wood_color
   space.add(right_shape)
   collision_shape = pymunk.Poly.create_box(wood_body, (box_width, box_height))
   collision_shape.filter = pymunk.ShapeFilter(
@@ -184,6 +198,7 @@ def ground():
   ground_shape = pymunk.Segment(ground_body, (0, HEIGHT - 50), (WIDTH, HEIGHT - 50), 5)
   ground_shape.elasticity = 0.5
   ground_shape.friction = 1.0
+  ground_shape.color = (*ground_color, 255)
   space.add(ground_body, ground_shape)
 
 def draw_trajectory_preview():
@@ -199,7 +214,7 @@ def draw_trajectory_preview():
   vx = pull_vector[0] * 8
   vy = pull_vector[1] * 8
   gx, gy = space.gravity
-  sim_dt = 1.0 / 60.0  # Match your main loop dt
+  sim_dt = 1.0 / 60.0  
   damping = space.damping
   for frame in range(120):  
       # Apply damping 
@@ -214,7 +229,7 @@ def draw_trajectory_preview():
       if py >= HEIGHT - 50:
           break
       if frame % 10 == 0:
-          pygame.draw.circle(screen, (200, 200, 200), (int(px), int(py)), 3)
+          pygame.draw.circle(screen, (255, 255, 255), (int(px), int(py)), 3)
 
 ground()
 create_bird()
