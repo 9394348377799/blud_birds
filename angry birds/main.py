@@ -12,7 +12,7 @@ bird_color = (51, 51, 255, 255)
 pig_color = (254, 204, 153, 255)
 wood_color = (150, 90, 40, 255)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Pymunk Slingshot Demo")
+pygame.display.set_caption("blud birds")
 clock = pygame.time.Clock()
 
 space = pymunk.Space()
