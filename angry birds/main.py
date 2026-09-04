@@ -62,8 +62,8 @@ def generate_level():
         block_type = random.choice(["wood", "pig_wood"])
 
         # Random position
-        x = random.randint(650, 950)
-        y = random.randint(300, 550)
+        x = random.randint(750, 900)
+        y = random.randint(300, 670)
         if block_type == "wood":
             create_wood_block((x, y))
         else:
