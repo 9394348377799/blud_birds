@@ -3,7 +3,7 @@ from tkinter import ttk
 import random
 import pygame
 from pathlib import Path
-from PIL import Image, ImageTk
+
 from tkinter import Toplevel
 import threading
 import sys
