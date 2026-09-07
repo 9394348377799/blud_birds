@@ -66,7 +66,11 @@ def generate_level():
         y = random.randint(300, 670)
         if block_type == "wood":
             create_wood_block((x, y))
+<<<<<<< HEAD
         elif block_type == "pig_wood":
+=======
+        else:
+>>>>>>> fdd8335203cd0913b6fab79ddd0b30c2ed928d54
             create_pig_wood_block((x, y))
             create_piggy((x, y))
 
@@ -123,7 +127,11 @@ def create_wood_block(pos):
     box_width = 60
     box_height = 60
     wall_thickness = 5
+<<<<<<< HEAD
     mass = 0.3
+=======
+    mass = 1
+>>>>>>> fdd8335203cd0913b6fab79ddd0b30c2ed928d54
 
     inertia = pymunk.moment_for_box(
         mass, (box_width, box_height)
@@ -209,7 +217,11 @@ def create_pig_wood_block(pos):
     box_width = 60
     box_height = 60
     wall_thickness = 5
+<<<<<<< HEAD
     mass = 0.3
+=======
+    mass = 1
+>>>>>>> fdd8335203cd0913b6fab79ddd0b30c2ed928d54
 
     inertia = pymunk.moment_for_box(
         mass, (box_width, box_height)
