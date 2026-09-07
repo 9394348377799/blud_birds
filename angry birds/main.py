@@ -55,18 +55,18 @@ def reset_environment():
 def generate_level():
     destroy_environment()
 
-    block_count = random.randint(1,10)
+    block_count = random.randint(2,10)
 
     for i in range(block_count):
 
         block_type = random.choice(["wood", "pig_wood"])
 
         # Random position
-        x = random.randint(650, 750)
+        x = random.randint(750, 900)
         y = random.randint(300, 670)
         if block_type == "wood":
             create_wood_block((x, y))
-        else:
+        elif block_type == "pig_wood":
             create_pig_wood_block((x, y))
             create_piggy((x, y))
 
@@ -123,7 +123,7 @@ def create_wood_block(pos):
     box_width = 60
     box_height = 60
     wall_thickness = 5
-    mass = 0.5
+    mass = 0.3
 
     inertia = pymunk.moment_for_box(
         mass, (box_width, box_height)
@@ -209,7 +209,7 @@ def create_pig_wood_block(pos):
     box_width = 60
     box_height = 60
     wall_thickness = 5
-    mass = 0.5
+    mass = 0.3
 
     inertia = pymunk.moment_for_box(
         mass, (box_width, box_height)
