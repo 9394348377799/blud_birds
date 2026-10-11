@@ -67,6 +67,10 @@ def generate_level():
         if block_type == "wood":
             create_wood_block((x, y))
         elif block_type == "pig_wood":
+<<<<<<< HEAD
+=======
+
+>>>>>>> 51a189ff33b4a6a88fef4b4aaf8185fde2cf72a1
             create_pig_wood_block((x, y))
             create_piggy((x, y))
 
@@ -122,8 +126,14 @@ def create_piggy(pos):
 def create_wood_block(pos):
     box_width = 60
     box_height = 60
+<<<<<<< HEAD
     wall_thickness = 5
     mass = 0.3
+=======
+    wall_thickness =  5
+    mass = 0.3
+    mass = 1
+>>>>>>> 51a189ff33b4a6a88fef4b4aaf8185fde2cf72a1
 
     inertia = pymunk.moment_for_box(
         mass, (box_width, box_height)
@@ -304,6 +314,7 @@ def ground():
   ground_shape.friction = 1.0
   ground_shape.color = (*ground_color, 255)
   space.add(ground_body, ground_shape)
+
 
 def draw_trajectory_preview():
   if not ball_body or not is_dragging:
