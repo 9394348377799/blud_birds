@@ -15,6 +15,8 @@ wood_color = (150, 90, 40, 255)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("blud birds")
 clock = pygame.time.Clock()
+GRID_SIZE = 60
+GRID_COLOR = (50, 50, 50)
 
 space = pymunk.Space()
 space.damping = 0.7
@@ -67,10 +69,6 @@ def generate_level():
         if block_type == "wood":
             create_wood_block((x, y))
         elif block_type == "pig_wood":
-<<<<<<< HEAD
-=======
-
->>>>>>> 51a189ff33b4a6a88fef4b4aaf8185fde2cf72a1
             create_pig_wood_block((x, y))
             create_piggy((x, y))
 
@@ -126,14 +124,9 @@ def create_piggy(pos):
 def create_wood_block(pos):
     box_width = 60
     box_height = 60
-<<<<<<< HEAD
-    wall_thickness = 5
-    mass = 0.3
-=======
     wall_thickness =  5
     mass = 0.3
     mass = 1
->>>>>>> 51a189ff33b4a6a88fef4b4aaf8185fde2cf72a1
 
     inertia = pymunk.moment_for_box(
         mass, (box_width, box_height)
@@ -316,6 +309,13 @@ def ground():
   space.add(ground_body, ground_shape)
 
 
+def draw_grid():
+  for x in range(0, WIDTH + GRID_SIZE, GRID_SIZE):
+    pygame.draw.line(screen, GRID_COLOR, (x, 0), (x, HEIGHT), 1)
+  for y in range(0, HEIGHT + GRID_SIZE, GRID_SIZE):
+    pygame.draw.line(screen, GRID_COLOR, (0, y), (WIDTH, y), 1)
+
+
 def draw_trajectory_preview():
   if not ball_body or not is_dragging:
     return
@@ -346,18 +346,10 @@ def draw_trajectory_preview():
       if frame % 2 == 0:
           pygame.draw.circle(screen, (255, 255, 255), (int(px), int(py)), 3)
 
-def DrawGrid():
-  grid_color = (255, 255, 255)
-  for x in range(0, WIDTH, 50):
-    pygame.draw.line(screen, grid_color, (x, 0), (x, HEIGHT))
-  for y in range(0, HEIGHT, 50):
-    pygame.draw.line(screen, grid_color, (0, y), (WIDTH, y))
-
 ground()
 create_bird()
 generate_level()
 ball_shape.mass = 0.5
-DrawGrid()
 
 
 # Main Game Loop
@@ -375,6 +367,7 @@ while running:
         ball_shape.mass = 0.5
       elif event.key == pygame.K_e:
         generate_level()
+
 
     elif event.type == pygame.MOUSEBUTTONDOWN:
       if not is_launched and ball_body:
@@ -429,6 +422,7 @@ while running:
 
 
   screen.fill(color)
+  draw_grid()
 
   if is_dragging:
     pygame.draw.line(
@@ -440,13 +434,11 @@ while running:
     )
     draw_trajectory_preview()
 
-
-    
   # Render Pymunk objects via debug drawer
   draw_options = pymunk.pygame_util.DrawOptions(screen)
   space.debug_draw(draw_options)
   
-  # Validate ball position if it exists
+  # Validate ball pos
   if ball_body and not is_valid_position(ball_body.position):
 
     ball_body.position = ANCHOR_POS
