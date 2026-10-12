@@ -33,6 +33,9 @@ space.collision_slop = 0.05
 space.collision_bias = 0.4
 PIG_CATEGORY = 2
 PIG_WOOD_CATEGORY = 4
+# Explosion parameters
+EXPLOSION_RADIUS = 100
+EXPLOSION_DURATION = 300
 
 
 def is_valid_position(pos):
@@ -54,7 +57,42 @@ def cell_to_position(cell_x, cell_y):
   )
 
 
-  
+# NEED TO COMMENT AND FIX
+def birdspolosion(position):
+  explosions.append((position, pygame.time.get_ticks()))
+  for body, shapes in environment_objects:
+    if body.body_type != pymunk.Body.DYNAMIC:
+      continue
+    offset = body.position - position
+    distance = offset.length
+    if distance >= EXPLOSION_RADIUS:
+      continue
+    direction = offset.normalized() if distance > 0 else pymunk.Vec2d(0, -1)
+    strength = 28 * (1 - distance / EXPLOSION_RADIUS)
+    body.apply_impulse_at_world_point(direction * strength, body.position)
+
+
+# NEED TO COMMENT AND FIX
+def on_bird_block_collision(arbiter, collision_space, data):
+  global explosion_triggered, pending_explosion
+  if not is_launched or explosion_triggered or ball_body is None:
+    return True
+
+  block_shapes = {
+      shape
+      for body, shapes in environment_objects
+      if len(shapes) > 1
+      for shape in shapes
+  }
+  if not any(shape in block_shapes for shape in arbiter.shapes):
+    return True
+
+  if ball_shape in arbiter.shapes:
+    explosion_triggered = True
+    pending_explosion = tuple(ball_body.position)
+  return True
+
+
 def choose_spawn_cell(used_cells):
   for _ in range(500):
     cell_x = random.randint(11, 15)
@@ -107,6 +145,10 @@ pig_body = None
 pig_shape = None
 is_dragging = False
 is_launched = False
+# Explosion state variables
+explosion_triggered = False
+pending_explosion = None
+explosions = []
 environment_objects = []
 environment_constraints = []
 
@@ -156,7 +198,7 @@ def destroy_environment():
 
 
 def create_bird():
-  global ball_body, ball_shape, is_launched
+  global ball_body, ball_shape, is_launched, explosion_triggered
   mass = 0.5
   radius = 15
   inertia = pymunk.moment_for_circle(mass, 0, radius)
@@ -168,6 +210,8 @@ def create_bird():
   ball_shape.color = bird_color
   space.add(ball_body, ball_shape)
   is_launched = False
+  # Explosion state variables
+  explosion_triggered = False
 
 def destroy_bird():
   global ball_body, ball_shape, is_launched, is_dragging
@@ -449,6 +493,8 @@ ground()
 create_bird()
 generate_level()
 ball_shape.mass = 0.5
+# Set up collision handler for bird and block collisions
+space.on_collision(None, None, begin=on_bird_block_collision)
 
 
 # Main Game Loop
@@ -515,6 +561,11 @@ while running:
       ball_body.velocity = (0, 0)  
 
   space.step(dt)
+  # Handle pending explosion
+  if pending_explosion is not None:
+    birdspolosion(pending_explosion)
+    pending_explosion = None
+
   if ball_body and is_launched:
     if ball_body.position.y > HEIGHT +100 or ball_body.position.x > WIDTH + 100 or ball_body.position.x < -100:
       destroy_bird()
@@ -536,6 +587,28 @@ while running:
   # Render Pymunk objects via debug drawer
   draw_options = pymunk.pygame_util.DrawOptions(screen)
   space.debug_draw(draw_options)
+
+# Render explosions
+  now = pygame.time.get_ticks()
+  active_explosions = []
+  for position, started_at in explosions:
+    age = now - started_at
+    if age >= EXPLOSION_DURATION:
+      continue
+    progress = age / EXPLOSION_DURATION
+    radius = int(12 + 58 * progress)
+    alpha = int(220 * (1 - progress))
+    blast_surface = pygame.Surface((radius * 2 + 4, radius * 2 + 4), pygame.SRCALPHA)
+    pygame.draw.circle(
+        blast_surface,
+        (255, 150, 35, alpha),
+        (radius + 2, radius + 2),
+        radius,
+        width=4,
+    )
+    screen.blit(blast_surface, (int(position[0] - radius - 2), int(position[1] - radius - 2)))
+    active_explosions.append((position, started_at))
+  explosions = active_explosions
   
   # Validate ball pos
   if ball_body and not is_valid_position(ball_body.position):
