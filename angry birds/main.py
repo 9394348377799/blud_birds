@@ -53,11 +53,12 @@ def cell_to_position(cell_x, cell_y):
       (cell_y * GRID_SIZE) + (GRID_SIZE / 2),
   )
 
-
+  
 def choose_spawn_cell(used_cells):
   for _ in range(500):
     cell_x = random.randint(11, 15)
 
+    # Roll for a radndomly generated structure.
     roll = random.random()
     if roll < 0.7:
       cell_y = random.randint(8, 10)
@@ -90,7 +91,7 @@ def choose_spawn_cell(used_cells):
       used_cells.add(candidate)
       return candidate
 
-  return None
+# "ok" is used as a boolean flag to indicate whether the candidate cell is valid.
 
 #Anchor POS
 ANCHOR_POS = (175, 450)
@@ -187,6 +188,7 @@ def create_piggy(pos):
   pig_shape.elasticity = 0.5
   pig_shape.friction = 0.5
   pig_shape.color = pig_color
+  # Collision filtering to prevent pig from colliding with wood block
   pig_shape.filter = pymunk.ShapeFilter(
       categories=PIG_CATEGORY, mask=0xFFFFFFFF ^ PIG_WOOD_CATEGORY
   )
@@ -341,6 +343,7 @@ def create_pig_wood_block(pos):
     pig_shape.elasticity = 0.5
     pig_shape.friction = 0.5
     pig_shape.color = pig_color
+    #Collision filtering to prevent pig from colliding with wood block
     pig_shape.filter = pymunk.ShapeFilter(
         categories=PIG_CATEGORY,
         mask=0xFFFFFFFF ^ PIG_WOOD_CATEGORY
