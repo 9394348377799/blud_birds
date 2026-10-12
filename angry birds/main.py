@@ -172,7 +172,7 @@ def create_piggy(pos):
 def create_wood_block(pos):
     box_width = BLOCK_SIZE
     box_height = BLOCK_SIZE
-    wall_thickness =  5
+    wall_thickness =  3.5
     mass = BLOCK_MASS
 
     inertia = pymunk.moment_for_box(
@@ -258,7 +258,7 @@ def create_wood_block(pos):
 def create_pig_wood_block(pos):
     box_width = BLOCK_SIZE
     box_height = BLOCK_SIZE
-    wall_thickness = 5
+    wall_thickness = 3.5
     mass = BLOCK_MASS
 
     inertia = pymunk.moment_for_box(
