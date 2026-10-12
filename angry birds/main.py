@@ -15,7 +15,8 @@ wood_color = (150, 90, 40, 255)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("blud birds")
 clock = pygame.time.Clock()
-GRID_SIZE = 60
+BLOCK_SIZE = 60
+GRID_SIZE = BLOCK_SIZE
 GRID_COLOR = (50, 50, 50)
 
 space = pymunk.Space()
@@ -26,7 +27,24 @@ PIG_WOOD_CATEGORY = 4
 
 
 def is_valid_position(pos):
-  return not (math.isnan(pos[0]) or math.isnan(pos[1]))  
+  return not (math.isnan(pos[0]) or math.isnan(pos[1]))
+
+
+def snap_to_grid(pos):
+  # Keep each block centered inside a single grid cell.
+  # A 60x60 block should live between x=0..60, x=60..120, etc.
+  # so the center is at 30, 90, 150, ... not directly on the grid line.
+  return (
+      (round(pos[0] / GRID_SIZE) * GRID_SIZE) + (GRID_SIZE / 2),
+      (round(pos[1] / GRID_SIZE) * GRID_SIZE) + (GRID_SIZE / 2),
+  )
+
+
+def cell_to_position(cell_x, cell_y):
+  return (
+      (cell_x * GRID_SIZE) + (GRID_SIZE / 2),
+      (cell_y * GRID_SIZE) + (GRID_SIZE / 2),
+  )
 
 #Anchor POS
 ANCHOR_POS = (175, 450)
@@ -57,20 +75,29 @@ def reset_environment():
 def generate_level():
     destroy_environment()
 
-    block_count = random.randint(2,10)
+    block_count = random.randint(2, 10)
+    used_cells = set()
 
-    for i in range(block_count):
-
+    for _ in range(block_count):
         block_type = random.choice(["wood", "pig_wood"])
 
-        # Random position
-        x = random.randint(750, 900)
-        y = random.randint(300, 670)
+        for _ in range(200):
+            cell_x = random.randint(11, 15)
+            cell_y = random.randint(4, 10)
+            cell = (cell_x, cell_y)
+            if cell in used_cells:
+                continue
+            used_cells.add(cell)
+            pos = cell_to_position(cell_x, cell_y)
+            break
+        else:
+            continue
+
         if block_type == "wood":
-            create_wood_block((x, y))
+            create_wood_block(pos)
         elif block_type == "pig_wood":
-            create_pig_wood_block((x, y))
-            create_piggy((x, y))
+            create_pig_wood_block(pos)
+            create_piggy(pos)
 
 def destroy_environment():
    global pig_body, pig_shape
@@ -110,7 +137,7 @@ def create_piggy(pos):
   radius = 20
   intertia = pymunk.moment_for_circle(mass, 0, radius)
   pig_body = pymunk.Body(mass=mass, moment=intertia, body_type=pymunk.Body.DYNAMIC)
-  pig_body.position = (pos)
+  pig_body.position = pos
   pig_shape = pymunk.Circle(pig_body, 20)
   pig_shape.elasticity = 0.5
   pig_shape.friction = 0.5
@@ -122,8 +149,8 @@ def create_piggy(pos):
   environment_objects.append((pig_body, [pig_shape]))
 
 def create_wood_block(pos):
-    box_width = 60
-    box_height = 60
+    box_width = BLOCK_SIZE
+    box_height = BLOCK_SIZE
     wall_thickness =  5
     mass = 0.3
     mass = 1
@@ -209,8 +236,8 @@ def create_wood_block(pos):
     ))
 
 def create_pig_wood_block(pos):
-    box_width = 60
-    box_height = 60
+    box_width = BLOCK_SIZE
+    box_height = BLOCK_SIZE
     wall_thickness = 5
     mass = 0.3
 
