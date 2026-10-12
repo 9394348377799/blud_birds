@@ -53,6 +53,7 @@ def cell_to_position(cell_x, cell_y):
       (cell_y * GRID_SIZE) + (GRID_SIZE / 2),
   )
 
+
   
 def choose_spawn_cell(used_cells):
   for _ in range(500):
@@ -198,7 +199,7 @@ def create_piggy(pos):
 def create_wood_block(pos):
     box_width = BLOCK_SIZE
     box_height = BLOCK_SIZE
-    wall_thickness =  3.5
+    wall_thickness = 3.5
     mass = BLOCK_MASS
 
     inertia = pymunk.moment_for_box(
@@ -429,7 +430,7 @@ def draw_trajectory_preview():
   gx, gy = space.gravity
   sim_dt = 1.0 / 60.0  
   damping = space.damping
-  for frame in range(120):  
+  for frame in range(250):  
       # Apply damping 
       vx *= math.pow(damping, sim_dt)
       vy *= math.pow(damping, sim_dt)
@@ -439,9 +440,9 @@ def draw_trajectory_preview():
       # Advance position
       px += vx * sim_dt
       py += vy * sim_dt
-      if py >= HEIGHT - 50:
+      if py >= HEIGHT - 120:
           break
-      if frame % 2 == 0:
+      if frame % 4 == 0:
           pygame.draw.circle(screen, (255, 255, 255), (int(px), int(py)), 3)
 
 ground()
