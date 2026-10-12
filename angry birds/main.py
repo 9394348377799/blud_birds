@@ -32,8 +32,6 @@ def is_valid_position(pos):
 
 def snap_to_grid(pos):
   # Keep each block centered inside a single grid cell.
-  # A 60x60 block should live between x=0..60, x=60..120, etc.
-  # so the center is at 30, 90, 150, ... not directly on the grid line.
   return (
       (round(pos[0] / GRID_SIZE) * GRID_SIZE) + (GRID_SIZE / 2),
       (round(pos[1] / GRID_SIZE) * GRID_SIZE) + (GRID_SIZE / 2),
@@ -60,6 +58,7 @@ pig_shape = None
 is_dragging = False
 is_launched = False
 environment_objects = []
+environment_constraints = []
 
 
 def reset_bird():
@@ -97,10 +96,12 @@ def generate_level():
             create_wood_block(pos)
         elif block_type == "pig_wood":
             create_pig_wood_block(pos)
-            create_piggy(pos)
 
 def destroy_environment():
    global pig_body, pig_shape
+   for constraint in environment_constraints:
+     space.remove(constraint)
+   environment_constraints.clear()
    for body, shapes in environment_objects:
      space.remove(body, *shapes)
    environment_objects.clear()
@@ -250,21 +251,12 @@ def create_pig_wood_block(pos):
         moment=inertia,
         body_type=pymunk.Body.DYNAMIC
     )
-
-    wood_body.moment = float("inf")
     wood_body.position = pos
 
     left = -box_width / 2
     right = box_width / 2
     top = -box_height / 2
     bottom = box_height / 2
-
-
-    pig_bottom_filter = pymunk.ShapeFilter(
-        categories=PIG_WOOD_CATEGORY,
-        mask=0xFFFFFFFF
-    )
-
 
     # Bottom
     bottom_shape = pymunk.Segment(
@@ -298,34 +290,47 @@ def create_pig_wood_block(pos):
         wall_thickness / 2
     )
 
+    pig_mass = 0.5
+    pig_inertia = pymunk.moment_for_circle(pig_mass, 0, 20)
+    pig_body = pymunk.Body(mass=pig_mass, moment=pig_inertia, body_type=pymunk.Body.DYNAMIC)
+    pig_body.position = pos
+    pig_shape = pymunk.Circle(pig_body, 20)
+    pig_shape.elasticity = 0.5
+    pig_shape.friction = 0.5
+    pig_shape.color = pig_color
+    pig_shape.filter = pymunk.ShapeFilter(
+        categories=PIG_CATEGORY,
+        mask=0xFFFFFFFF ^ PIG_WOOD_CATEGORY
+    )
+
     for shape in [
         bottom_shape,
         top_shape,
         left_shape,
-        right_shape
+        right_shape,
     ]:
         shape.elasticity = 0.5
         shape.friction = 0.5
         shape.color = wood_color
-    bottom_shape.filter = pig_bottom_filter
+
+    pivot = pymunk.PivotJoint(wood_body, pig_body, pos)
+    pivot.bias_coef = 0.1
+    pivot.max_force = 2000
 
     space.add(
         wood_body,
         bottom_shape,
         top_shape,
         left_shape,
-        right_shape
+        right_shape,
+        pig_body,
+        pig_shape,
+        pivot,
     )
 
-    environment_objects.append((
-        wood_body,
-        [
-            bottom_shape,
-            top_shape,
-            left_shape,
-            right_shape
-        ]
-    ))
+    environment_objects.append((wood_body,[bottom_shape, top_shape, left_shape, right_shape]))
+    environment_objects.append((pig_body,[pig_shape]))
+    environment_constraints.append(pivot)
 
 def ground():
   ground_body = pymunk.Body(body_type=pymunk.Body.STATIC)
