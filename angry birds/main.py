@@ -21,12 +21,14 @@ GRID_COLOR = (50, 50, 50)
 BLOCK_MASS = 0.18
 BLOCK_ELASTICITY = 0.5
 BLOCK_FRICTION = 0.5
+# New padding to make sure the spawns down collide with each other
 SPAWN_PADDING = 16
 MIN_CENTER_DISTANCE = BLOCK_SIZE + SPAWN_PADDING
 
 space = pymunk.Space()
 space.damping = 0.82
 space.gravity = (0,700)
+# Collision prevention
 space.collision_slop = 0.05
 space.collision_bias = 0.4
 PIG_CATEGORY = 2
