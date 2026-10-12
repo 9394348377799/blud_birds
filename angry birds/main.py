@@ -47,6 +47,30 @@ def cell_to_position(cell_x, cell_y):
       (cell_y * GRID_SIZE) + (GRID_SIZE / 2),
   )
 
+
+def choose_spawn_cell(used_cells, min_distance=1.5):
+  for _ in range(500):
+    cell_x = random.randint(11, 15)
+    cell_y = random.randint(4, 10)
+    candidate = (cell_x, cell_y)
+
+    if candidate in used_cells:
+      continue
+
+    ok = True
+    for other in used_cells:
+      dx = cell_x - other[0]
+      dy = cell_y - other[1]
+      if math.hypot(dx, dy) < min_distance:
+        ok = False
+        break
+
+    if ok:
+      used_cells.add(candidate)
+      return candidate
+
+  return None
+
 #Anchor POS
 ANCHOR_POS = (175, 450)
 PIG_POS = (800, 570)  # Positioned inside the hollow box
@@ -83,17 +107,10 @@ def generate_level():
     for _ in range(block_count):
         block_type = random.choice(["wood", "pig_wood"])
 
-        for _ in range(200):
-            cell_x = random.randint(11, 15)
-            cell_y = random.randint(4, 10)
-            cell = (cell_x, cell_y)
-            if cell in used_cells:
-                continue
-            used_cells.add(cell)
-            pos = cell_to_position(cell_x, cell_y)
-            break
-        else:
-            continue
+        cell = choose_spawn_cell(used_cells, min_distance=1.8)
+        if cell is None:
+          continue
+        pos = cell_to_position(cell[0], cell[1])
 
         if block_type == "wood":
             create_wood_block(pos)
