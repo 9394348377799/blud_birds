@@ -21,10 +21,14 @@ GRID_COLOR = (50, 50, 50)
 BLOCK_MASS = 0.18
 BLOCK_ELASTICITY = 0.5
 BLOCK_FRICTION = 0.5
+SPAWN_PADDING = 16
+MIN_CENTER_DISTANCE = BLOCK_SIZE + SPAWN_PADDING
 
 space = pymunk.Space()
 space.damping = 0.82
 space.gravity = (0,700)
+space.collision_slop = 0.05
+space.collision_bias = 0.4
 PIG_CATEGORY = 2
 PIG_WOOD_CATEGORY = 4
 
@@ -48,7 +52,7 @@ def cell_to_position(cell_x, cell_y):
   )
 
 
-def choose_spawn_cell(used_cells, min_distance=1.5):
+def choose_spawn_cell(used_cells):
   for _ in range(500):
     cell_x = random.randint(11, 15)
     cell_y = random.randint(4, 10)
@@ -57,11 +61,12 @@ def choose_spawn_cell(used_cells, min_distance=1.5):
     if candidate in used_cells:
       continue
 
+    candidate_pos = cell_to_position(cell_x, cell_y)
     ok = True
     for other in used_cells:
-      dx = cell_x - other[0]
-      dy = cell_y - other[1]
-      if math.hypot(dx, dy) < min_distance:
+      other_pos = cell_to_position(other[0], other[1])
+      dist = math.hypot(candidate_pos[0] - other_pos[0], candidate_pos[1] - other_pos[1])
+      if dist < MIN_CENTER_DISTANCE:
         ok = False
         break
 
@@ -107,7 +112,7 @@ def generate_level():
     for _ in range(block_count):
         block_type = random.choice(["wood", "pig_wood"])
 
-        cell = choose_spawn_cell(used_cells, min_distance=1.8)
+        cell = choose_spawn_cell(used_cells)
         if cell is None:
           continue
         pos = cell_to_position(cell[0], cell[1])
