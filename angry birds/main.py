@@ -57,11 +57,25 @@ def cell_to_position(cell_x, cell_y):
 def choose_spawn_cell(used_cells):
   for _ in range(500):
     cell_x = random.randint(11, 15)
-    cell_y = random.randint(4, 10)
+
+    roll = random.random()
+    if roll < 0.7:
+      cell_y = random.randint(8, 10)
+    elif roll < 0.9:
+      cell_y = random.randint(6, 7)
+    else:
+      cell_y = random.randint(4, 5)
+
     candidate = (cell_x, cell_y)
 
     if candidate in used_cells:
       continue
+
+    # Allow higher blocks only if they have support underneath or are grounded.
+    if cell_y >= 6:
+      support_cell = (cell_x, cell_y + 1)
+      if support_cell not in used_cells and cell_y < 8:
+        continue
 
     candidate_pos = cell_to_position(cell_x, cell_y)
     ok = True
@@ -118,6 +132,9 @@ def generate_level():
         if cell is None:
           continue
         pos = cell_to_position(cell[0], cell[1])
+
+        # Force the block to start on the ground
+        pos = (pos[0], min(pos[1], HEIGHT - 120))
 
         if block_type == "wood":
             create_wood_block(pos)
