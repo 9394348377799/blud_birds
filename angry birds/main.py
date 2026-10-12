@@ -18,10 +18,13 @@ clock = pygame.time.Clock()
 BLOCK_SIZE = 60
 GRID_SIZE = BLOCK_SIZE
 GRID_COLOR = (50, 50, 50)
+BLOCK_MASS = 0.18
+BLOCK_ELASTICITY = 0.5
+BLOCK_FRICTION = 0.5
 
 space = pymunk.Space()
-space.damping = 0.7
-space.gravity = (0,900)
+space.damping = 0.82
+space.gravity = (0,700)
 PIG_CATEGORY = 2
 PIG_WOOD_CATEGORY = 4
 
@@ -153,8 +156,7 @@ def create_wood_block(pos):
     box_width = BLOCK_SIZE
     box_height = BLOCK_SIZE
     wall_thickness =  5
-    mass = 0.3
-    mass = 1
+    mass = BLOCK_MASS
 
     inertia = pymunk.moment_for_box(
         mass, (box_width, box_height)
@@ -213,8 +215,8 @@ def create_wood_block(pos):
         left_shape,
         right_shape
     ]:
-        shape.elasticity = 0.5
-        shape.friction = 0.5
+        shape.elasticity = BLOCK_ELASTICITY
+        shape.friction = BLOCK_FRICTION
         shape.color = wood_color
 
     # Add only the four walls
@@ -240,7 +242,7 @@ def create_pig_wood_block(pos):
     box_width = BLOCK_SIZE
     box_height = BLOCK_SIZE
     wall_thickness = 5
-    mass = 0.3
+    mass = BLOCK_MASS
 
     inertia = pymunk.moment_for_box(
         mass, (box_width, box_height)
@@ -290,10 +292,10 @@ def create_pig_wood_block(pos):
         wall_thickness / 2
     )
 
-    pig_mass = 0.5
+    pig_mass = 0.2
     pig_inertia = pymunk.moment_for_circle(pig_mass, 0, 20)
     pig_body = pymunk.Body(mass=pig_mass, moment=pig_inertia, body_type=pymunk.Body.DYNAMIC)
-    pig_body.position = pos
+    pig_body.position = (pos[0], pos[1] - 10)
     pig_shape = pymunk.Circle(pig_body, 20)
     pig_shape.elasticity = 0.5
     pig_shape.friction = 0.5
@@ -309,13 +311,31 @@ def create_pig_wood_block(pos):
         left_shape,
         right_shape,
     ]:
-        shape.elasticity = 0.5
-        shape.friction = 0.5
+        shape.elasticity = BLOCK_ELASTICITY
+        shape.friction = BLOCK_FRICTION
         shape.color = wood_color
 
-    pivot = pymunk.PivotJoint(wood_body, pig_body, pos)
-    pivot.bias_coef = 0.1
-    pivot.max_force = 2000
+    slide = pymunk.SlideJoint(
+        wood_body,
+        pig_body,
+        (0, 0),
+        (0, 0),
+        0,
+        100,
+    )
+    slide.bias_coef = 0.08
+    slide.max_force = 1800
+
+    spring = pymunk.DampedSpring(
+        wood_body,
+        pig_body,
+        (0, 0),
+        (0, 0),
+        # Give the pig room to move
+        rest_length=18,
+        stiffness=22,
+        damping=4,
+    )
 
     space.add(
         wood_body,
@@ -325,12 +345,14 @@ def create_pig_wood_block(pos):
         right_shape,
         pig_body,
         pig_shape,
-        pivot,
+        slide,
+        spring,
     )
 
     environment_objects.append((wood_body,[bottom_shape, top_shape, left_shape, right_shape]))
     environment_objects.append((pig_body,[pig_shape]))
-    environment_constraints.append(pivot)
+    environment_constraints.append(slide)
+    environment_constraints.append(spring)
 
 def ground():
   ground_body = pymunk.Body(body_type=pymunk.Body.STATIC)
