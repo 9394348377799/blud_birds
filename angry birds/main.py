@@ -5,6 +5,9 @@ import pygame
 import pymunk
 import pymunk.pygame_util
 
+
+# TO DO: blocks breaking, pigs dying.
+
 pygame.init()
 WIDTH, HEIGHT = 1080, 720
 color = (0, 0, 0)
@@ -81,7 +84,6 @@ def on_bird_block_collision(arbiter, collision_space, data):
   global explosion_triggered, pending_explosion
   if not is_launched or explosion_triggered or ball_body is None:
     return True
-
 
 # Check if the collision involves any of the blocks in the environment.
   block_shapes = {
