@@ -5,9 +5,6 @@ import pygame
 import pymunk
 import pymunk.pygame_util
 
-
-# TO DO: blocks breaking, pigs dying.
-
 pygame.init()
 WIDTH, HEIGHT = 1080, 720
 color = (0, 0, 0)
@@ -85,19 +82,18 @@ def on_bird_block_collision(arbiter, collision_space, data):
   if not is_launched or explosion_triggered or ball_body is None:
     return True
 
-# Check if the collision involves any of the blocks in the environment.
-  block_shapes = {
-      shape
+  collision_shapes = set(arbiter.shapes)
+  hit_blocks = [
+      body
       for body, shapes in environment_objects
-      if len(shapes) > 1
-      for shape in shapes
-  }
-
-  if not any(shape in block_shapes for shape in arbiter.shapes):
+      if len(shapes) > 1 and any(shape in collision_shapes for shape in shapes)
+  ]
+  if not hit_blocks:
     return True
 
 # If the collision involves the bird, trigger the explosion.
-  if ball_shape in arbiter.shapes:
+  if ball_shape in collision_shapes:
+    blocks_hit_by_bird.update(hit_blocks)
     explosion_triggered = True
     pending_explosion = tuple(ball_body.position)
   return True
@@ -161,6 +157,18 @@ pending_explosion = None
 explosions = []
 environment_objects = []
 environment_constraints = []
+blocks_hit_by_bird = set()
+
+def blocks_breaking():
+  for body, shapes in list(environment_objects):
+    if body.body_type != pymunk.Body.DYNAMIC:
+      continue
+    if len(shapes) == 4 and body in blocks_hit_by_bird:
+      speed = body.velocity.length
+      if speed > 200:
+        space.remove(body, *shapes)
+        environment_objects.remove((body, shapes))
+        blocks_hit_by_bird.discard(body)
 
 
 def reset_bird():
@@ -203,6 +211,7 @@ def destroy_environment():
    for body, shapes in environment_objects:
      space.remove(body, *shapes)
    environment_objects.clear()
+   blocks_hit_by_bird.clear()
    pig_body = None
    pig_shape = None
 
@@ -571,6 +580,7 @@ while running:
       ball_body.velocity = (0, 0)  
 
   space.step(dt)
+  blocks_breaking()
   # Handle pending explosion
   if pending_explosion is not None:
     birdspolosion(pending_explosion)
