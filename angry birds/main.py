@@ -34,7 +34,7 @@ space.collision_bias = 0.4
 PIG_CATEGORY = 2
 PIG_WOOD_CATEGORY = 4
 # Explosion parameters
-EXPLOSION_RADIUS = 100
+EXPLOSION_RADIUS = 500
 EXPLOSION_DURATION = 300
 
 
@@ -57,36 +57,44 @@ def cell_to_position(cell_x, cell_y):
   )
 
 
-# NEED TO COMMENT AND FIX
 def birdspolosion(position):
   explosions.append((position, pygame.time.get_ticks()))
+  # Takes the shapes and bodies and applies an impuslse reaction to the bodies within the explosion radius.
   for body, shapes in environment_objects:
     if body.body_type != pymunk.Body.DYNAMIC:
       continue
+    # Calculate the distance from the explosion centre from body position.
     offset = body.position - position
     distance = offset.length
+    # If the distance is greater than the explosion radius, this will not act.
     if distance >= EXPLOSION_RADIUS:
       continue
+    # Calculate the direction and strengh of the impulse applied.
     direction = offset.normalized() if distance > 0 else pymunk.Vec2d(0, -1)
-    strength = 28 * (1 - distance / EXPLOSION_RADIUS)
+    # Strength of the applied impulse
+    strength = 25 * (1 - distance / EXPLOSION_RADIUS)
     body.apply_impulse_at_world_point(direction * strength, body.position)
 
 
-# NEED TO COMMENT AND FIX
+# Pair of colliding shapes and all data related to their collision.
 def on_bird_block_collision(arbiter, collision_space, data):
   global explosion_triggered, pending_explosion
   if not is_launched or explosion_triggered or ball_body is None:
     return True
 
+
+# Check if the collision involves any of the blocks in the environment.
   block_shapes = {
       shape
       for body, shapes in environment_objects
       if len(shapes) > 1
       for shape in shapes
   }
+
   if not any(shape in block_shapes for shape in arbiter.shapes):
     return True
 
+# If the collision involves the bird, trigger the explosion.
   if ball_shape in arbiter.shapes:
     explosion_triggered = True
     pending_explosion = tuple(ball_body.position)
