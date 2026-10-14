@@ -74,6 +74,8 @@ def birdspolosion(position):
     # Strength of the applied impulse
     strength = 25 * (1 - distance / EXPLOSION_RADIUS)
     body.apply_impulse_at_world_point(direction * strength, body.position)
+    blocks_hit_by_bird.add(body)  
+
 
 
 # Pair of colliding shapes and all data related to their collision.
@@ -166,9 +168,16 @@ def blocks_breaking():
     if len(shapes) == 4 and body in blocks_hit_by_bird:
       speed = body.velocity.length
       if speed > 200:
+        for constraint in list(environment_constraints):
+          if constraint.a is body or constraint.b is body:
+            space.remove(constraint)
+            environment_constraints.remove(constraint)
         space.remove(body, *shapes)
         environment_objects.remove((body, shapes))
         blocks_hit_by_bird.discard(body)
+
+
+    
 
 
 def reset_bird():
