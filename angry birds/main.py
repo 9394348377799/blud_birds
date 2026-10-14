@@ -33,6 +33,8 @@ space.collision_slop = 0.05
 space.collision_bias = 0.4
 PIG_CATEGORY = 2
 PIG_WOOD_CATEGORY = 4
+PIG_COLLISION_TYPE = 10
+PIG_DEATH_IMPULSE = 70
 # Explosion parameters
 EXPLOSION_RADIUS = 500
 EXPLOSION_DURATION = 300
@@ -160,6 +162,7 @@ explosions = []
 environment_objects = []
 environment_constraints = []
 blocks_hit_by_bird = set()
+pending_pig_deaths = set()
 
 def blocks_breaking():
   for body, shapes in list(environment_objects):
@@ -177,7 +180,28 @@ def blocks_breaking():
         blocks_hit_by_bird.discard(body)
 
 
-    
+def on_pig_impact(arbiter, collision_space, data):
+  pig_shapes = [
+      shape for shape in arbiter.shapes
+      if shape.collision_type == PIG_COLLISION_TYPE
+  ]
+  if arbiter.total_impulse.length >= PIG_DEATH_IMPULSE:
+    pending_pig_deaths.update(pig_shapes)
+
+
+def pigs_dying():
+  for pig_shape in pending_pig_deaths:
+    pig_body = pig_shape.body
+    for constraint in list(environment_constraints):
+      if constraint.a is pig_body or constraint.b is pig_body:
+        space.remove(constraint)
+        environment_constraints.remove(constraint)
+    space.remove(pig_body, pig_shape)
+    environment_objects[:] = [
+        (body, shapes) for body, shapes in environment_objects
+        if pig_shape not in shapes
+    ]
+  pending_pig_deaths.clear()
 
 
 def reset_bird():
@@ -258,6 +282,7 @@ def create_piggy(pos):
   pig_body = pymunk.Body(mass=mass, moment=intertia, body_type=pymunk.Body.DYNAMIC)
   pig_body.position = pos
   pig_shape = pymunk.Circle(pig_body, 20)
+  pig_shape.collision_type = PIG_COLLISION_TYPE
   pig_shape.elasticity = 0.5
   pig_shape.friction = 0.5
   pig_shape.color = pig_color
@@ -413,6 +438,7 @@ def create_pig_wood_block(pos):
     pig_body = pymunk.Body(mass=pig_mass, moment=pig_inertia, body_type=pymunk.Body.DYNAMIC)
     pig_body.position = (pos[0], pos[1] - 10)
     pig_shape = pymunk.Circle(pig_body, 20)
+    pig_shape.collision_type = PIG_COLLISION_TYPE
     pig_shape.elasticity = 0.5
     pig_shape.friction = 0.5
     pig_shape.color = pig_color
@@ -522,7 +548,12 @@ create_bird()
 generate_level()
 ball_shape.mass = 0.5
 # Set up collision handler for bird and block collisions
-space.on_collision(None, None, begin=on_bird_block_collision)
+space.on_collision(
+  None,
+  None,
+  begin=on_bird_block_collision,
+  post_solve=on_pig_impact,
+)
 
 
 # Main Game Loop
@@ -590,6 +621,7 @@ while running:
 
   space.step(dt)
   blocks_breaking()
+  pigs_dying()
   # Handle pending explosion
   if pending_explosion is not None:
     birdspolosion(pending_explosion)
