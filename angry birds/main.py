@@ -114,7 +114,7 @@ def choose_spawn_cell(used_cells):
     elif roll < 0.9:
       cell_y = random.randint(6, 7)
     else:
-      cell_y = random.randint(4, 5)
+      cell_y = random.randint(5, 5)
 
     candidate = (cell_x, cell_y)
 
@@ -179,16 +179,17 @@ def blocks_breaking():
         environment_objects.remove((body, shapes))
         blocks_hit_by_bird.discard(body)
 
-
+# Handle pig deaths based on collision impulse
 def on_pig_impact(arbiter, collision_space, data):
   pig_shapes = [
       shape for shape in arbiter.shapes
       if shape.collision_type == PIG_COLLISION_TYPE
   ]
   if arbiter.total_impulse.length >= PIG_DEATH_IMPULSE:
+    # Store the pig shapes in a set to be processed.
     pending_pig_deaths.update(pig_shapes)
 
-
+# Handle pig deaths after the physics step
 def pigs_dying():
   for pig_shape in pending_pig_deaths:
     pig_body = pig_shape.body
@@ -552,6 +553,7 @@ space.on_collision(
   None,
   None,
   begin=on_bird_block_collision,
+  # Handle pig deaths based on collision impulse
   post_solve=on_pig_impact,
 )
 
