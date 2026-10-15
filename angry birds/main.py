@@ -42,6 +42,9 @@ pig_laugh_frames = [
 pygame.mixer.init()
 bird_launch_sound = pygame.mixer.Sound(os.path.join(RESOURCE_DIR, "birdflynoise.mp3"))
 
+pygame.mixer.init()
+pig_death_sound = pygame.mixer.Sound(os.path.join(RESOURCE_DIR, "barfer.mp3"))
+
 
 PIG_LAUGH_FRAME_MS = 250
 BLOCK_SIZE = 60
@@ -227,6 +230,7 @@ def pigs_dying():
       if constraint.a is pig_body or constraint.b is pig_body:
         space.remove(constraint)
         environment_constraints.remove(constraint)
+    pig_death_sound.play()
     space.remove(pig_body, pig_shape)
     environment_objects[:] = [
         (body, shapes) for body, shapes in environment_objects
