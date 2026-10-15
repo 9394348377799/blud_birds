@@ -17,6 +17,13 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("blud birds")
 clock = pygame.time.Clock()
 RESOURCE_DIR = os.path.join(os.path.dirname(__file__), "resources")
+background_image = pygame.transform.scale(
+    pygame.image.load(
+        os.path.join(RESOURCE_DIR, "2c24ba2e0e1a2455cccc366a96efcbf0.png")
+    ).convert(),
+    (WIDTH, HEIGHT),
+)
+
 bird_idle_image = pygame.transform.scale(
   pygame.image.load(os.path.join(RESOURCE_DIR, "blud_idle.png")).convert_alpha(),
   (36, 36),
@@ -678,7 +685,7 @@ while running:
       destroy_bird()
 
 
-  screen.fill(color)
+  screen.blit(background_image, (0, 0))
   draw_grid()
 
   if is_dragging:
