@@ -3,6 +3,7 @@ import random
 import sys
 import pygame
 import pymunk
+import os
 import pymunk.pygame_util
 
 pygame.init()
@@ -15,6 +16,23 @@ wood_color = (150, 90, 40, 255)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("blud birds")
 clock = pygame.time.Clock()
+RESOURCE_DIR = os.path.join(os.path.dirname(__file__), "resources")
+bird_idle_image = pygame.transform.scale(
+  pygame.image.load(os.path.join(RESOURCE_DIR, "blud_idle.png")).convert_alpha(),
+  (36, 36),
+)
+bird_fly_image = pygame.transform.scale(
+  pygame.image.load(os.path.join(RESOURCE_DIR, "blud_fly.png")).convert_alpha(),
+  (36, 36),
+)
+pig_image = pygame.transform.scale(
+  pygame.image.load(os.path.join(RESOURCE_DIR, "BLURPIG.png")).convert_alpha(),
+  (48, 48),
+)
+pig_laugh_image = pygame.transform.scale(
+  pygame.image.load(os.path.join(RESOURCE_DIR, "laugher.gif")).convert_alpha(),
+  (48, 48),
+)
 BLOCK_SIZE = 60
 GRID_SIZE = BLOCK_SIZE
 GRID_COLOR = (50, 50, 50)
@@ -163,6 +181,7 @@ environment_objects = []
 environment_constraints = []
 blocks_hit_by_bird = set()
 pending_pig_deaths = set()
+pig_expression_states = {}
 
 def blocks_breaking():
   for body, shapes in list(environment_objects):
@@ -202,6 +221,7 @@ def pigs_dying():
         (body, shapes) for body, shapes in environment_objects
         if pig_shape not in shapes
     ]
+    pig_expression_states.pop(pig_shape, None)
   pending_pig_deaths.clear()
 
 
@@ -238,16 +258,18 @@ def generate_level():
             create_pig_wood_block(pos)
 
 def destroy_environment():
-   global pig_body, pig_shape
-   for constraint in environment_constraints:
-     space.remove(constraint)
-   environment_constraints.clear()
-   for body, shapes in environment_objects:
-     space.remove(body, *shapes)
-   environment_objects.clear()
-   blocks_hit_by_bird.clear()
-   pig_body = None
-   pig_shape = None
+  global pig_body, pig_shape
+  for constraint in environment_constraints:
+    space.remove(constraint)
+  environment_constraints.clear()
+  for body, shapes in environment_objects:
+    space.remove(body, *shapes)
+  environment_objects.clear()
+  blocks_hit_by_bird.clear()
+  pending_pig_deaths.clear()
+  pig_expression_states.clear()
+  pig_body = None
+  pig_shape = None
 
 
 def create_bird():
@@ -284,6 +306,9 @@ def create_piggy(pos):
   pig_body.position = pos
   pig_shape = pymunk.Circle(pig_body, 20)
   pig_shape.collision_type = PIG_COLLISION_TYPE
+  pig_expression_states[pig_shape] = (
+      False, pygame.time.get_ticks() + random.randint(2000, 5000)
+  )
   pig_shape.elasticity = 0.5
   pig_shape.friction = 0.5
   pig_shape.color = pig_color
@@ -440,6 +465,9 @@ def create_pig_wood_block(pos):
     pig_body.position = (pos[0], pos[1] - 10)
     pig_shape = pymunk.Circle(pig_body, 20)
     pig_shape.collision_type = PIG_COLLISION_TYPE
+    pig_expression_states[pig_shape] = (
+      False, pygame.time.get_ticks() + random.randint(2000, 5000)
+    )
     pig_shape.elasticity = 0.5
     pig_shape.friction = 0.5
     pig_shape.color = pig_color
@@ -651,8 +679,30 @@ while running:
   draw_options = pymunk.pygame_util.DrawOptions(screen)
   space.debug_draw(draw_options)
 
-# Render explosions
   now = pygame.time.get_ticks()
+  if ball_body is not None:
+    current_bird_image = bird_fly_image if is_launched else bird_idle_image
+    bird_rect = current_bird_image.get_rect(
+        center=(round(ball_body.position.x), round(ball_body.position.y))
+    )
+    screen.blit(current_bird_image, bird_rect)
+
+  for body, shapes in environment_objects:
+    for shape in shapes:
+      if shape.collision_type != PIG_COLLISION_TYPE:
+        continue
+      laughing, next_change = pig_expression_states[shape]
+      if now >= next_change:
+        laughing = not laughing
+        next_change = now + random.randint(2000, 5000)
+        pig_expression_states[shape] = (laughing, next_change)
+      current_pig_image = pig_laugh_image if laughing else pig_image
+      pig_rect = current_pig_image.get_rect(
+          center=(round(body.position.x), round(body.position.y))
+      )
+      screen.blit(current_pig_image, pig_rect)
+
+# Render explosions
   active_explosions = []
   for position, started_at in explosions:
     age = now - started_at
