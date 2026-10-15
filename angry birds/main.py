@@ -29,10 +29,16 @@ pig_image = pygame.transform.scale(
   pygame.image.load(os.path.join(RESOURCE_DIR, "BLURPIG.png")).convert_alpha(),
   (48, 48),
 )
-pig_laugh_image = pygame.transform.scale(
-  pygame.image.load(os.path.join(RESOURCE_DIR, "laugher.gif")).convert_alpha(),
-  (48, 48),
-)
+pig_laugh_frames = [
+  pygame.transform.scale(
+    pygame.image.load(
+      os.path.join(RESOURCE_DIR, f"laugher-frame-{frame}.png")
+    ).convert_alpha(),
+    (48, 48),
+  )
+  for frame in range(2)
+]
+PIG_LAUGH_FRAME_MS = 250
 BLOCK_SIZE = 60
 GRID_SIZE = BLOCK_SIZE
 GRID_COLOR = (50, 50, 50)
@@ -696,7 +702,11 @@ while running:
         laughing = not laughing
         next_change = now + random.randint(2000, 5000)
         pig_expression_states[shape] = (laughing, next_change)
-      current_pig_image = pig_laugh_image if laughing else pig_image
+      if laughing:
+        frame_index = (now // PIG_LAUGH_FRAME_MS) % len(pig_laugh_frames)
+        current_pig_image = pig_laugh_frames[frame_index]
+      else:
+        current_pig_image = pig_image
       pig_rect = current_pig_image.get_rect(
           center=(round(body.position.x), round(body.position.y))
       )
