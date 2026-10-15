@@ -2,6 +2,7 @@ import math
 import random
 import sys
 import pygame
+import pygame_gui
 import pymunk
 import os
 import pymunk.pygame_util
@@ -16,6 +17,12 @@ wood_color = (150, 90, 40, 255)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("blud birds")
 clock = pygame.time.Clock()
+pygame_gui_manager = pygame_gui.UIManager((WIDTH, HEIGHT))
+reset_bird_button = pygame_gui.elements.UIButton(
+    relative_rect=pygame.Rect((WIDTH - 120, 10), (110, 30)),
+    text="Reset Bird",
+    manager=pygame_gui_manager
+)
 RESOURCE_DIR = os.path.join(os.path.dirname(__file__), "resources")
 background_image = pygame.transform.scale(
     pygame.image.load(
@@ -610,12 +617,22 @@ space.on_collision(
 
 # Main Game Loop
 running = True
-while running:
+while running: 
+  time_delta = clock.tick(60) / 1000.0
   dt = 1.0 / 60.0
 
   for event in pygame.event.get():
+    ui_consumed = pygame_gui_manager.process_events(event)
     if event.type == pygame.QUIT:
       running = False
+
+    elif event.type == pygame_gui.UI_BUTTON_PRESSED:
+        if event.ui_element == reset_bird_button:
+            reset_bird()
+            ball_shape.mass = 0.5
+
+    elif ui_consumed:
+        continue
 
     elif event.type == pygame.KEYDOWN:
       if event.key == pygame.K_r:
@@ -756,8 +773,10 @@ while running:
     ball_body.position = ANCHOR_POS
     ball_body.velocity = (0, 0)
 
+  pygame_gui_manager.update(dt)
+  pygame_gui_manager.draw_ui(screen)
+
   pygame.display.flip()
-  clock.tick(60)
 
 pygame.quit()
 sys.exit()
