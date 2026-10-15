@@ -1,0 +1,138 @@
+import math
+
+import pygame
+import pymunk
+
+import settings
+from characters import destroy_bird
+from game_state import state
+
+
+def is_valid_position(position):
+	return not (math.isnan(position[0]) or math.isnan(position[1]))
+
+
+def trigger_explosion(position):
+	state.explosions.append((position, pygame.time.get_ticks()))
+	for body, _shapes in state.environment_objects:
+		if body.body_type != pymunk.Body.DYNAMIC:
+			continue
+		offset = body.position - position
+		distance = offset.length
+		if distance >= settings.EXPLOSION_RADIUS:
+			continue
+		direction = offset.normalized() if distance > 0 else pymunk.Vec2d(0, -1)
+		strength = 25 * (1 - distance / settings.EXPLOSION_RADIUS)
+		body.apply_impulse_at_world_point(direction * strength, body.position)
+		state.blocks_hit_by_bird.add(body)
+
+
+def on_bird_block_collision(arbiter, collision_space, data):
+	if (
+		not state.is_launched
+		or state.explosion_triggered
+		or state.ball_body is None
+	):
+		return True
+
+	collision_shapes = set(arbiter.shapes)
+	hit_blocks = [
+		body
+		for body, shapes in state.environment_objects
+		if len(shapes) > 1 and any(shape in collision_shapes for shape in shapes)
+	]
+	if state.ball_shape in collision_shapes and hit_blocks:
+		state.blocks_hit_by_bird.update(hit_blocks)
+		state.explosion_triggered = True
+		state.pending_explosion = tuple(state.ball_body.position)
+	return True
+
+
+def blocks_breaking():
+	for body, shapes in list(state.environment_objects):
+		if body.body_type != pymunk.Body.DYNAMIC:
+			continue
+		if len(shapes) == 4 and body in state.blocks_hit_by_bird:
+			if body.velocity.length > 200:
+				for constraint in list(state.environment_constraints):
+					if constraint.a is body or constraint.b is body:
+						state.space.remove(constraint)
+						state.environment_constraints.remove(constraint)
+				state.space.remove(body, *shapes)
+				state.environment_objects.remove((body, shapes))
+				state.blocks_hit_by_bird.discard(body)
+
+
+def on_pig_impact(arbiter, collision_space, data):
+	pig_shapes = [
+		shape for shape in arbiter.shapes
+		if shape.collision_type == settings.PIG_COLLISION_TYPE
+	]
+	if arbiter.total_impulse.length >= settings.PIG_DEATH_IMPULSE:
+		state.pending_pig_deaths.update(pig_shapes)
+
+
+def pigs_dying():
+	for pig_shape in list(state.pending_pig_deaths):
+		pig_body = pig_shape.body
+		for constraint in list(state.environment_constraints):
+			if constraint.a is pig_body or constraint.b is pig_body:
+				state.space.remove(constraint)
+				state.environment_constraints.remove(constraint)
+		state.pig_death_sound.play()
+		state.space.remove(pig_body, pig_shape)
+		state.environment_objects[:] = [
+			(body, shapes)
+			for body, shapes in state.environment_objects
+			if pig_shape not in shapes
+		]
+		state.pig_expression_states.pop(pig_shape, None)
+	state.pending_pig_deaths.clear()
+
+
+def setup_collision_handlers():
+	state.space.on_collision(
+		None,
+		None,
+		begin=on_bird_block_collision,
+		post_solve=on_pig_impact,
+	)
+
+
+def update(dt):
+	if state.is_dragging:
+		mouse_x, mouse_y = pygame.mouse.get_pos()
+		delta_x = mouse_x - settings.ANCHOR_POS[0]
+		delta_y = mouse_y - settings.ANCHOR_POS[1]
+		distance = math.hypot(delta_x, delta_y)
+		max_pull = 125
+		if distance > max_pull and distance > 0:
+			delta_x = delta_x / distance * max_pull
+			delta_y = delta_y / distance * max_pull
+		new_position = (
+			settings.ANCHOR_POS[0] + delta_x,
+			settings.ANCHOR_POS[1] + delta_y,
+		)
+		if is_valid_position(new_position):
+			state.ball_body.position = new_position
+			state.ball_body.velocity = (0, 0)
+
+	state.space.step(dt)
+	blocks_breaking()
+	pigs_dying()
+	if state.pending_explosion is not None:
+		trigger_explosion(state.pending_explosion)
+		state.pending_explosion = None
+
+	if state.ball_body and state.is_launched:
+		position = state.ball_body.position
+		if (
+			position.y > settings.HEIGHT + 100
+			or position.x > settings.WIDTH + 100
+			or position.x < -100
+		):
+			destroy_bird()
+
+	if state.ball_body and not is_valid_position(state.ball_body.position):
+		state.ball_body.position = settings.ANCHOR_POS
+		state.ball_body.velocity = (0, 0)

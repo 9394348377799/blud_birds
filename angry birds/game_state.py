@@ -1,0 +1,44 @@
+import pymunk
+
+
+class GameState:
+	def __init__(self):
+		self.space = pymunk.Space()
+		self.space.damping = 0.82
+		self.space.gravity = (0, 700)
+		self.space.collision_slop = 0.05
+		self.space.collision_bias = 0.4
+
+		self.screen = None
+		self.background_image = None
+		self.bird_idle_image = None
+		self.bird_fly_image = None
+		self.pig_image = None
+		self.pig_laugh_frames = []
+		self.bird_launch_sound = None
+		self.pig_death_sound = None
+		self.ui_manager = None
+		self.start_button = None
+		self.reset_bird_button = None
+		self.menu_button = None
+
+		self.ball_body = None
+		self.ball_shape = None
+		self.pig_body = None
+		self.pig_shape = None
+		self.static_anchor = None
+
+		self.is_dragging = False
+		self.is_launched = False
+		self.explosion_triggered = False
+		self.pending_explosion = None
+		self.explosions = []
+		self.environment_objects = []
+		self.environment_constraints = []
+		self.blocks_hit_by_bird = set()
+		self.pending_pig_deaths = set()
+		self.pig_expression_states = {}
+		self.game_state = "menu"
+
+
+state = GameState()
