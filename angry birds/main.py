@@ -17,12 +17,30 @@ wood_color = (150, 90, 40, 255)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("blud birds")
 clock = pygame.time.Clock()
+
 pygame_gui_manager = pygame_gui.UIManager((WIDTH, HEIGHT))
 reset_bird_button = pygame_gui.elements.UIButton(
     relative_rect=pygame.Rect((WIDTH - 120, 10), (110, 30)),
     text="Reset Bird",
     manager=pygame_gui_manager
 )
+
+menu_button = pygame_gui.elements.UIButton(
+    relative_rect=pygame.Rect((WIDTH - 120, 50), (110, 30)),
+    text="Main Menu",
+    manager=pygame_gui_manager
+)
+
+game_state = "menu"
+
+start_button = pygame_gui.elements.UIButton(
+    relative_rect=pygame.Rect((WIDTH // 2 - 75, HEIGHT // 2 - 25), (150, 50)),
+    text="Start Game",
+    manager=pygame_gui_manager
+)
+reset_bird_button.hide()
+menu_button.hide()
+
 RESOURCE_DIR = os.path.join(os.path.dirname(__file__), "resources")
 background_image = pygame.transform.scale(
     pygame.image.load(
@@ -627,12 +645,22 @@ while running:
       running = False
 
     elif event.type == pygame_gui.UI_BUTTON_PRESSED:
-        if event.ui_element == reset_bird_button:
+        if event.ui_element == start_button:
+            game_state = "playing"
+            start_button.hide()
+            reset_bird_button.show()
+            menu_button.show()
+        elif event.ui_element == menu_button:
+          game_state = "menu"
+          start_button.show()
+          reset_bird_button.hide()
+          menu_button.hide()
+        elif event.ui_element == reset_bird_button:
             reset_bird()
             ball_shape.mass = 0.5
 
-    elif ui_consumed:
-        continue
+    elif game_state != "playing" or ui_consumed:
+      continue
 
     elif event.type == pygame.KEYDOWN:
       if event.key == pygame.K_r:
@@ -674,6 +702,13 @@ while running:
         is_launched = True 
         bird_launch_sound.play()
         is_dragging = False
+
+  if game_state == "menu":
+    screen.blit(background_image, (0, 0))
+    pygame_gui_manager.update(time_delta)
+    pygame_gui_manager.draw_ui(screen)
+    pygame.display.flip()
+    continue
 
   if is_dragging:
     mouse_pos = pygame.mouse.get_pos()
@@ -773,7 +808,7 @@ while running:
     ball_body.position = ANCHOR_POS
     ball_body.velocity = (0, 0)
 
-  pygame_gui_manager.update(dt)
+  pygame_gui_manager.update(time_delta)
   pygame_gui_manager.draw_ui(screen)
 
   pygame.display.flip()
