@@ -38,6 +38,11 @@ pig_laugh_frames = [
   )
   for frame in range(2)
 ]
+
+pygame.mixer.init()
+bird_launch_sound = pygame.mixer.Sound(os.path.join(RESOURCE_DIR, "birdflynoise.mp3"))
+
+
 PIG_LAUGH_FRAME_MS = 250
 BLOCK_SIZE = 60
 GRID_SIZE = BLOCK_SIZE
@@ -639,6 +644,7 @@ while running:
 
         #Update state flags last
         is_launched = True 
+        bird_launch_sound.play()
         is_dragging = False
 
   if is_dragging:
