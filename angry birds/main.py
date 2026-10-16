@@ -79,7 +79,7 @@ def main():
         else:
             state.screen.blit(state.background_image, (0, 0))
             if state.game_state in ("won", "lost"):
-                message = "Level complete!" if state.game_state == "won" else "Out of birds"
+                message = "Level completx   e!" if state.game_state == "won" else "Out of birds"
                 font = pygame.font.Font(None, 64)
                 text = font.render(message, True, (255, 255, 255))
                 state.screen.blit(text, text.get_rect(center=(settings.WIDTH // 2, settings.HEIGHT // 2)))
