@@ -19,8 +19,10 @@ class GameState:
 		self.pig_death_sound = None
 		self.ui_manager = None
 		self.start_button = None
+		self.level_buttons = {}
 		self.reset_bird_button = None
 		self.menu_button = None
+		self.selected_level = None
 
 		self.ball_body = None
 		self.ball_shape = None

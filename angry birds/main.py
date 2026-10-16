@@ -24,7 +24,6 @@ def main():
 
     levels.ground()
     characters.create_bird()
-    levels.generate_level()
     state.ball_shape.mass = 0.5
     physics.setup_collision_handlers()
 
@@ -44,7 +43,7 @@ def main():
                     characters.reset_bird()
                     state.ball_shape.mass = 0.5
                 elif event.key == pygame.K_e:
-                    levels.generate_level()
+                    levels.generate_level(state.selected_level)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if not state.is_launched and state.ball_body:
                     mouse_position = pygame.mouse.get_pos()

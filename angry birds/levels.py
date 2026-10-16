@@ -8,6 +8,27 @@ import settings
 from game_state import state
 
 
+LEVEL_LAYOUTS = {
+	1: ((12, 10, "wood"), (14, 10, "wood"), (13, 9, "pig_wood")),
+	2: (
+		(12, 10, "wood"),
+		(14, 10, "wood"),
+		(12, 9, "wood"),
+		(14, 9, "wood"),
+		(13, 8, "pig_wood"),
+	),
+	3: (
+		(11, 10, "wood"),
+		(13, 10, "pig_wood"),
+		(15, 10, "wood"),
+		(12, 9, "wood"),
+		(14, 9, "wood"),
+		(13, 8, "pig_wood"),
+		(13, 7, "wood"),
+	),
+}
+
+
 def snap_to_grid(position):
 	return (
 		round(position[0] / settings.GRID_SIZE) * settings.GRID_SIZE + settings.GRID_SIZE / 2,
@@ -153,16 +174,11 @@ def destroy_environment():
 	state.pig_shape = None
 
 
-def generate_level():
+def generate_level(level_number=1):
 	destroy_environment()
-	used_cells = set()
-	for _ in range(random.randint(2, 10)):
-		cell = choose_spawn_cell(used_cells)
-		if cell is None:
-			continue
-		position = cell_to_position(*cell)
-		position = (position[0], min(position[1], settings.HEIGHT - 120))
-		if random.choice(("wood", "pig_wood")) == "wood":
+	for cell_x, cell_y, block_type in LEVEL_LAYOUTS[level_number]:
+		position = cell_to_position(cell_x, cell_y)
+		if block_type == "wood":
 			create_wood_block(position)
 		else:
 			create_pig_wood_block(position)
