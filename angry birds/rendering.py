@@ -9,10 +9,10 @@ from game_state import state
 
 
 def draw_grid():
-	for x in range(0, settings.WIDTH + settings.GRID_SIZE, settings.GRID_SIZE):
-		pygame.draw.line(state.screen, settings.GRID_COLOR, (x, 0), (x, settings.HEIGHT), 1)
-	for y in range(0, settings.HEIGHT + settings.GRID_SIZE, settings.GRID_SIZE):
-		pygame.draw.line(state.screen, settings.GRID_COLOR, (0, y), (settings.WIDTH, y), 1)
+    for x in range(0, settings.WIDTH + settings.GRID_SIZE, settings.GRID_SIZE):
+        pygame.draw.line(state.screen, settings.GRID_COLOR, (x, 0), (x, settings.HEIGHT), 1)
+    for y in range(0, settings.HEIGHT + settings.GRID_SIZE, settings.GRID_SIZE):
+        pygame.draw.line(state.screen, settings.GRID_COLOR, (0, y), (settings.WIDTH, y), 1)
 
 
 def draw_trajectory_preview():
@@ -47,7 +47,7 @@ def draw_trajectory_preview():
 def draw_game():
 	screen = state.screen
 	screen.blit(state.background_image, (0, 0))
-	draw_grid()
+	# draw_grid()
 
 	if state.is_dragging and state.ball_body:
 		pygame.draw.line(
