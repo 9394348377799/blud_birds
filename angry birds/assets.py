@@ -43,3 +43,6 @@ def load_assets():
     state.pig_death_sound = pygame.mixer.Sound(
         os.path.join(resource_dir, "barfer.mp3")
     )
+    state.pig_laugh_sound = pygame.mixer.Sound(
+        os.path.join(resource_dir, "lasghter(1).mp3")
+    )

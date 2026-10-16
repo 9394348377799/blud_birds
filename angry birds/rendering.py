@@ -31,10 +31,10 @@ def draw_trajectory_preview():
 	for frame in range(250):
 		velocity_x *= math.pow(damping, simulation_dt)
 		velocity_y *= math.pow(damping, simulation_dt)
-		velocity_x -= gravity_x * simulation_dt
-		velocity_y -= gravity_y * simulation_dt
-		position_x -= velocity_x * simulation_dt
-		position_y -= velocity_y * simulation_dt
+		velocity_x += gravity_x * simulation_dt
+		velocity_y += gravity_y * simulation_dt
+		position_x += velocity_x * simulation_dt
+		position_y += velocity_y * simulation_dt
 		if position_y >= settings.HEIGHT - 120:
 			break
 		if frame % 2 == 0:
@@ -81,6 +81,7 @@ def draw_game():
 			if laughing:
 				frame_index = (now // settings.PIG_LAUGH_FRAME_MS) % len(state.pig_laugh_frames)
 				pig_image = state.pig_laugh_frames[frame_index]
+				pygame.mixer.Sound.play(state.pig_laugh_sound)
 			else:
 				pig_image = state.pig_image
 			pig_rect = pig_image.get_rect(
