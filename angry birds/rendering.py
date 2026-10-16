@@ -47,6 +47,9 @@ def draw_trajectory_preview():
 def draw_game():
 	screen = state.screen
 	screen.blit(state.background_image, (0, 0))
+	font = pygame.font.Font(None, 32)
+	attempts_label = font.render(f"Birds: {state.attempts_left}", True, (255, 255, 255))
+	screen.blit(attempts_label, (20, 20))
 	# draw_grid()
 
 	if state.is_dragging and state.ball_body:

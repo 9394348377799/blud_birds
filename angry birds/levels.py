@@ -9,10 +9,12 @@ from game_state import state
 
 
 LEVEL_LAYOUTS = {
-	1: ((12, 10, "wood"), (13, 10, "wood"), (12.5, 9, "pig_wood")),
+	1: ((12, 10, "wood"), 
+	    (13, 10, "wood"), 
+		(12.5, 9, "pig_wood")),
 	2: (
 		(12, 10, "wood"),
-		(13, 10, "wood"),
+		(13, 10, "pig_wood"),
 		(12, 9, "wood"),
 		(13, 9, "wood"),
 		(12.5, 8, "pig_wood"),
@@ -20,15 +22,15 @@ LEVEL_LAYOUTS = {
 	3: (
 		(11, 10, "wood"),
 		(12, 10, "wood"),
-		(13, 10, "wood"),
+		(13, 10, "pig_wood"),
 		(14, 10, "wood"),
 		(15, 10, "wood"),
-		(11.5, 9, "wood"),
+		(11.5, 9, "pig_wood"),
 		(12.5, 9, "wood"),
 		(13.5, 9, "wood"),
 		(14.5, 9, "wood"),
 		(12, 8, "wood"),
-		(13, 8, "wood"),
+		(13, 8, "pig_wood"),
 		(14, 8, "wood"),
 		(12.5, 7, "wood"),
 		(13.5, 7, "wood"),
@@ -112,6 +114,7 @@ def create_wood_block(position):
 	shapes = _create_wood_shell(body)
 	state.space.add(body, *shapes)
 	state.environment_objects.append((body, shapes))
+	state.target_blocks.add(body)
 
 
 def create_pig_wood_block(position):
@@ -154,6 +157,7 @@ def create_pig_wood_block(position):
 	state.space.add(wood_body, *wood_shapes, pig_body, pig_shape, slide, spring)
 	state.environment_objects.append((wood_body, wood_shapes))
 	state.environment_objects.append((pig_body, [pig_shape]))
+	state.target_blocks.add(wood_body)
 	state.environment_constraints.extend((slide, spring))
 
 
@@ -176,8 +180,11 @@ def destroy_environment():
 		state.space.remove(body, *shapes)
 	state.environment_objects.clear()
 	state.blocks_hit_by_bird.clear()
+	state.target_blocks.clear()
 	state.pending_pig_deaths.clear()
 	state.pig_expression_states.clear()
+	state.shot_active = False
+	state.settled_time = 0.0
 	state.pig_body = None
 	state.pig_shape = None
 

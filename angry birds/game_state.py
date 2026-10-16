@@ -40,7 +40,11 @@ class GameState:
 		self.blocks_hit_by_bird = set()
 		self.pending_pig_deaths = set()
 		self.pig_expression_states = {}
+		self.target_blocks = set()
 		self.game_state = "menu"
+		self.attempts_left = 3
+		self.shot_active = False
+		self.settled_time = 0.0
 
 
 state = GameState()

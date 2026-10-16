@@ -60,6 +60,7 @@ def process_event(event):
 			)
 			state.selected_level = level_number
 			generate_level(level_number)
+			state.attempts_left = 3
 			reset_bird()
 			state.ball_shape.mass = 0.5
 			state.game_state = "playing"
@@ -74,8 +75,9 @@ def process_event(event):
 			for button in state.level_buttons.values():
 				button.hide()
 		elif event.ui_element == state.reset_bird_button:
-			reset_bird()
-			state.ball_shape.mass = 0.5
+			if not state.shot_active and not state.is_launched and state.attempts_left > 0:
+				reset_bird()
+				state.ball_shape.mass = 0.5
 	return ui_consumed
 
 

@@ -61,6 +61,35 @@ def blocks_breaking():
 				state.space.remove(body, *shapes)
 				state.environment_objects.remove((body, shapes))
 				state.blocks_hit_by_bird.discard(body)
+				state.target_blocks.discard(body)
+
+
+def scene_is_slow():
+	bodies = [body for body, _shapes in state.environment_objects]
+	if state.ball_body is not None:
+		bodies.append(state.ball_body)
+	return all(
+		body.body_type != pymunk.Body.DYNAMIC
+		or (body.velocity.length < 10 and abs(body.angular_velocity) < 0.5)
+		for body in bodies
+	)
+
+
+def finish_shot():
+	if not state.shot_active:
+		return
+
+	state.shot_active = False
+	state.settled_time = 0.0
+	destroy_bird()
+	if not state.target_blocks:
+		state.game_state = "won"
+	elif state.attempts_left <= 0:
+		state.game_state = "lost"
+	else:
+		from characters import create_bird
+
+		create_bird()
 
 
 def on_pig_impact(arbiter, collision_space, data):
@@ -136,3 +165,11 @@ def update(dt):
 	if state.ball_body and not is_valid_position(state.ball_body.position):
 		state.ball_body.position = settings.ANCHOR_POS
 		state.ball_body.velocity = (0, 0)
+
+	if state.shot_active:
+		if scene_is_slow():
+			state.settled_time += dt
+		else:
+			state.settled_time = 0.0
+		if state.settled_time >= 1.0:
+			finish_shot()
