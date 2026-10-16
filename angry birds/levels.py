@@ -9,22 +9,30 @@ from game_state import state
 
 
 LEVEL_LAYOUTS = {
-	1: ((12, 10, "wood"), (14, 10, "wood"), (13, 9, "pig_wood")),
+	1: ((12, 10, "wood"), (13, 10, "wood"), (12.5, 9, "pig_wood")),
 	2: (
 		(12, 10, "wood"),
-		(14, 10, "wood"),
+		(13, 10, "wood"),
 		(12, 9, "wood"),
-		(14, 9, "wood"),
-		(13, 8, "pig_wood"),
+		(13, 9, "wood"),
+		(12.5, 8, "pig_wood"),
 	),
 	3: (
 		(11, 10, "wood"),
-		(13, 10, "pig_wood"),
+		(12, 10, "wood"),
+		(13, 10, "wood"),
+		(14, 10, "wood"),
 		(15, 10, "wood"),
-		(12, 9, "wood"),
-		(14, 9, "wood"),
-		(13, 8, "pig_wood"),
-		(13, 7, "wood"),
+		(11.5, 9, "wood"),
+		(12.5, 9, "wood"),
+		(13.5, 9, "wood"),
+		(14.5, 9, "wood"),
+		(12, 8, "wood"),
+		(13, 8, "wood"),
+		(14, 8, "wood"),
+		(12.5, 7, "wood"),
+		(13.5, 7, "wood"),
+		(13, 6, "pig_wood"),
 	),
 }
 
