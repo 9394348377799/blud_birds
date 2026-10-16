@@ -39,15 +39,7 @@ def main():
             elif state.game_state != "playing" or ui_consumed:
                 continue
             elif event.type == pygame.KEYDOWN:
-                if (
-                    event.key == pygame.K_r
-                    and not state.shot_active
-                    and not state.is_launched
-                    and state.attempts_left > 0
-                ):
-                    characters.reset_bird()
-                    state.ball_shape.mass = 0.5
-                elif event.key == pygame.K_e:
+                if event.key == pygame.K_e:
                     levels.generate_level(state.selected_level)
                     state.attempts_left = 3
                     characters.reset_bird()

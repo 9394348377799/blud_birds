@@ -20,11 +20,6 @@ def initialize():
 		)
 		for level_number in range(1, 4)
 	}
-	state.reset_bird_button = pygame_gui.elements.UIButton(
-		relative_rect=pygame.Rect((settings.WIDTH - 120, 10), (110, 30)),
-		text="Reset Bird",
-		manager=state.ui_manager,
-	)
 	state.menu_button = pygame_gui.elements.UIButton(
 		relative_rect=pygame.Rect((settings.WIDTH - 120, 50), (110, 30)),
 		text="Main Menu",
@@ -37,7 +32,6 @@ def initialize():
 		text="Start Game",
 		manager=state.ui_manager,
 	)
-	state.reset_bird_button.hide()
 	state.menu_button.hide()
 	for button in state.level_buttons.values():
 		button.hide()
@@ -66,18 +60,12 @@ def process_event(event):
 			state.game_state = "playing"
 			for button in state.level_buttons.values():
 				button.hide()
-			state.reset_bird_button.show()
 		elif event.ui_element == state.menu_button:
 			state.game_state = "menu"
 			state.start_button.show()
-			state.reset_bird_button.hide()
 			state.menu_button.hide()
 			for button in state.level_buttons.values():
 				button.hide()
-		elif event.ui_element == state.reset_bird_button:
-			if not state.shot_active and not state.is_launched and state.attempts_left > 0:
-				reset_bird()
-				state.ball_shape.mass = 0.5
 	return ui_consumed
 
 

@@ -20,7 +20,6 @@ class GameState:
 		self.ui_manager = None
 		self.start_button = None
 		self.level_buttons = {}
-		self.reset_bird_button = None
 		self.menu_button = None
 		self.selected_level = None
 
