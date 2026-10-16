@@ -31,13 +31,13 @@ def draw_trajectory_preview():
 	for frame in range(250):
 		velocity_x *= math.pow(damping, simulation_dt)
 		velocity_y *= math.pow(damping, simulation_dt)
-		velocity_x += gravity_x * simulation_dt
-		velocity_y += gravity_y * simulation_dt
-		position_x += velocity_x * simulation_dt
-		position_y += velocity_y * simulation_dt
+		velocity_x -= gravity_x * simulation_dt
+		velocity_y -= gravity_y * simulation_dt
+		position_x -= velocity_x * simulation_dt
+		position_y -= velocity_y * simulation_dt
 		if position_y >= settings.HEIGHT - 120:
 			break
-		if frame % 4 == 0:
+		if frame % 2 == 0:
 			pygame.draw.circle(
 				state.screen, (255, 255, 255),
 				(int(position_x), int(position_y)), 3,
