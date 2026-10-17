@@ -16,7 +16,7 @@ from game_state import state
 def main():
     pygame.init()
     state.screen = pygame.display.set_mode((settings.WIDTH, settings.HEIGHT))
-    pygame.display.set_caption("blud birds")
+    pygame.display.set_caption(settings.CAPTION)
     clock = pygame.time.Clock()
 
     assets.load_assets()
@@ -24,13 +24,13 @@ def main():
 
     levels.ground()
     characters.create_bird()
-    state.ball_shape.mass = 0.5
+    state.ball_shape.mass = settings.BIRD_MASS
     physics.setup_collision_handlers()
 
     running = True
     while running:
-        time_delta = clock.tick(60) / 1000.0
-        dt = 1.0 / 60.0
+        time_delta = clock.tick(settings.FPS) 
+        dt = settings.SIMULATION_DT
 
         for event in pygame.event.get():
             ui_consumed = ui.process_event(event)
@@ -41,9 +41,9 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_e:
                     levels.generate_level(state.selected_level)
-                    state.attempts_left = 3
+                    state.attempts_left = settings.ATTEMPTS
                     characters.reset_bird()
-                    state.ball_shape.mass = 0.5
+                    state.ball_shape.mass = settings.BIRD_MASS
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if (
                     state.attempts_left > 0
@@ -64,9 +64,12 @@ def main():
                     settings.ANCHOR_POS[1] - state.ball_body.position.y,
                 )
                 state.ball_body.body_type = pymunk.Body.DYNAMIC
-                state.ball_body.mass = 0.5
-                state.ball_body.moment = pymunk.moment_for_circle(0.5, 0, 15)
-                state.ball_body.velocity = (pull_vector[0] * 8, pull_vector[1] * 8)
+                state.ball_body.mass = settings.BIRD_MASS
+                state.ball_body.moment = pymunk.moment_for_circle(
+                    settings.BIRD_MASS, 
+                    0, 
+                    settings.BIRD_RADIUS)
+                state.ball_body.velocity = tuple(coord * settings.LAUNCH_MULTIPLIER for coord in pull_vector)
                 state.attempts_left -= 1
                 state.is_launched = True
                 state.bird_launch_sound.play()
@@ -79,8 +82,8 @@ def main():
         else:
             state.screen.blit(state.background_image, (0, 0))
             if state.game_state in ("won", "lost"):
-                message = "Level completx   e!" if state.game_state == "won" else "Out of birds"
-                font = pygame.font.Font(None, 64)
+                message = "Level completed!" if state.game_state == "won" else "Out of birds"
+                font = pygame.font.Font(None, settings.FONT_SIZE_MESSAGE)
                 text = font.render(message, True, (255, 255, 255))
                 state.screen.blit(text, text.get_rect(center=(settings.WIDTH // 2, settings.HEIGHT // 2)))
 

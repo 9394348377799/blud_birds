@@ -97,6 +97,7 @@ def _merge(base, override):
     merged = dict(base)
     for key, value in override.items():
         if isinstance(value, dict) and key in merged:
+            isinstance(merged.get(key), dict)
             merged[key] = _merge(merged[key], value)
         else:
             merged[key] = value
@@ -106,7 +107,7 @@ def _validate(value, default):
     if isinstance(default, dict):
         source = value if isinstance(value, dict) else {}
         return {
-            key: _validate(source.get(key, default[key]), default[key])
+            key: _validate(source.get(key, item), item)
             for key, item in default.items()
         }
     if isinstance(default, bool):
@@ -133,10 +134,14 @@ def load_config(path=None):
     try:
         with open(path, encoding="utf-8") as handle:
             loaded = json.load(handle)
-    except (FileNotFoundError, PermsisionError, OSerror) as error:
+    except (FileNotFoundError, PermissionError, OSError) as error:
         print(f"[config] using built-in defaults ({error})")
         return _validate({}, DEFAULT_CONFIG)
     except (json.JSONDecodeError, UnicodeDecodeError) as error:
+        print("[config] config.json is invalid, using defaults")
+        return _validate({}, DEFAULT_CONFIG)
+    
+    if not isinstance(loaded, dict):
         print("[config] config.json must contain an object, using defaults")
         return _validate({}, DEFAULT_CONFIG)
 
@@ -147,8 +152,11 @@ CONFIG = load_config()
 
 
 
-WIDTH = 1080
-HEIGHT = 720
+WIDTH = CONFIG["window"]["width"]
+HEIGHT = CONFIG["window"]["height"]
+CAPTION = CONFIG["window"]["caption"]
+FPS = CONFIG["window"]["fps"]
+SIMULATION_DT = 1.0 / FPS
 
 COLOR = (0, 0, 0)
 GROUND_COLOR = (51, 0, 0)
@@ -157,23 +165,32 @@ PIG_COLOR = (254, 204, 153, 255)
 WOOD_COLOR = (150, 90, 40, 255)
 GRID_COLOR = (100, 100, 100, 255)
 
+BIRD_MASS = CONFIG["bird"]["mass"]
+BIRD_RADIUS = CONFIG["bird"]["radius"]
+LAUNCH_MULTIPLIER = CONFIG["bird"]["launch_multiplier"]
+GRAB_RADIUS = CONFIG["bird"]["grab_radius"]
 
-BLOCK_SIZE = 60
+
+
+BLOCK_SIZE = CONFIG["blocks"]["size"]
 GRID_SIZE = BLOCK_SIZE
-BLOCK_MASS = 0.18
-BLOCK_ELASTICITY = 0.5
-BLOCK_FRICTION = 0.5
-SPAWN_PADDING = 16
+BLOCK_MASS = CONFIG["blocks"]["mass"]
+BLOCK_ELASTICITY = CONFIG["blocks"]["elasticity"]
+BLOCK_FRICTION = CONFIG["blocks"]["friction"]
+SPAWN_PADDING = CONFIG["blocks"]["spawn_padding"]
 MIN_CENTER_DISTANCE = BLOCK_SIZE + SPAWN_PADDING
 
+FONT_SIZE_MESSAGE = 36
 PIG_CATEGORY = 2
 PIG_WOOD_CATEGORY = 4
 PIG_COLLISION_TYPE = 10
-PIG_DEATH_IMPULSE = 70
-PIG_LAUGH_FRAME_MS = 250
+PIG_DEATH_IMPULSE = CONFIG["pig"]["death_impulse"]
+PIG_LAUGH_FRAME_MS = CONFIG["pig"]["laugh_frame_ms"]
 
-EXPLOSION_RADIUS = 500
-EXPLOSION_DURATION = 300
+EXPLOSION_RADIUS = CONFIG["explosion"]["radius"]
+EXPLOSION_DURATION = CONFIG["explosion"]["duration_ms"]
 
-ANCHOR_POS = (175, 450)
+ATTEMPTS = CONFIG["game"]["attempts"]
+LEVEL_COUNT = CONFIG["game"]["level_count"]
+ANCHOR_POS = tuple(CONFIG["anchor"])
 PIG_POS = (800, 570)
