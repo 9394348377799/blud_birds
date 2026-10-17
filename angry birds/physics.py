@@ -108,7 +108,8 @@ def pigs_dying():
 			if constraint.a is pig_body or constraint.b is pig_body:
 				state.space.remove(constraint)
 				state.environment_constraints.remove(constraint)
-		state.pig_death_sound.play()
+			if state.pig_death_sound is not None:
+				state.pig_death_sound.play()
 		state.space.remove(pig_body, pig_shape)
 		state.environment_objects[:] = [
 			(body, shapes)

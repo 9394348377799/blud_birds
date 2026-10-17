@@ -84,7 +84,9 @@ def draw_game():
 			if laughing:
 				frame_index = (now // settings.PIG_LAUGH_FRAME_MS) % len(state.pig_laugh_frames)
 				pig_image = state.pig_laugh_frames[frame_index]
-				pygame.mixer.Sound.play(state.pig_laugh_sound)
+				if state.pig_laugh_sound is not None:
+					state.pig_laugh_sound.play()
+
 			else:
 				pig_image = state.pig_image
 			pig_rect = pig_image.get_rect(

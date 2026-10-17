@@ -72,7 +72,9 @@ def main():
                 state.ball_body.velocity = tuple(coord * settings.LAUNCH_MULTIPLIER for coord in pull_vector)
                 state.attempts_left -= 1
                 state.is_launched = True
-                state.bird_launch_sound.play()
+                if state.bird_launch_sound is not None:
+                    state.bird_launch_sound.play()
+
                 state.is_dragging = False
                 state.settled_time = 0.0
                 state.shot_active = True

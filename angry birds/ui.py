@@ -12,13 +12,13 @@ def initialize():
 	state.level_buttons = {
 		level_number: pygame_gui.elements.UIButton(
 			relative_rect=pygame.Rect(
-				(settings.WIDTH // 2 - 75, settings.HEIGHT // 2 - 90 + (level_number - 1) * 70),
-				(150, 50),
+				(settings.WIDTH // 2 - 75, settings.HEIGHT // 2 - 90 + (level_number - 1) * settings.LEVEL_BUTTON_SPACING),
+				(settings.BUTTON_SIZE),
 			),
 			text=f"Level {level_number}",
 			manager=state.ui_manager,
 		)
-		for level_number in range(1, 4)
+		for level_number in range(1, settings.LEVEL_COUNT + 1)
 	}
 	state.menu_button = pygame_gui.elements.UIButton(
 		relative_rect=pygame.Rect((settings.WIDTH - 120, 50), (110, 30)),
@@ -54,9 +54,9 @@ def process_event(event):
 			)
 			state.selected_level = level_number
 			generate_level(level_number)
-			state.attempts_left = 3
+			state.attempts_left = settings.ATTEMPTS
 			reset_bird()
-			state.ball_shape.mass = 0.5
+			state.ball_shape.mass = settings.BIRD_MASS
 			state.game_state = "playing"
 			for button in state.level_buttons.values():
 				button.hide()
