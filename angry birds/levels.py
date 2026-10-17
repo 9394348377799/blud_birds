@@ -10,11 +10,6 @@ from game_state import state
 
 
 
-def snap_to_grid(position):
-	return (
-		round(position[0] / settings.GRID_SIZE) * settings.GRID_SIZE + settings.GRID_SIZE / 2,
-		round(position[1] / settings.GRID_SIZE) * settings.GRID_SIZE + settings.GRID_SIZE / 2,
-	)
 
 
 def cell_to_position(cell_x, cell_y):
@@ -24,37 +19,6 @@ def cell_to_position(cell_x, cell_y):
 	)
 
 
-def choose_spawn_cell(used_cells):
-	for _ in range(500):
-		cell_x = random.randint(11, 15)
-		roll = random.random()
-		if roll < 0.7:
-			cell_y = random.randint(8, 10)
-		elif roll < 0.9:
-			cell_y = random.randint(6, 7)
-		else:
-			cell_y = 5
-
-		candidate = (cell_x, cell_y)
-		if candidate in used_cells:
-			continue
-
-		if cell_y >= 6:
-			support_cell = (cell_x, cell_y + 1)
-			if support_cell not in used_cells and cell_y < 8:
-				continue
-
-		candidate_position = cell_to_position(cell_x, cell_y)
-		if any(
-			math.dist(candidate_position, cell_to_position(*other))
-			< settings.MIN_CENTER_DISTANCE
-			for other in used_cells
-		):
-			continue
-
-		used_cells.add(candidate)
-		return candidate
-	return None
 
 
 def _create_wood_shell(body):
@@ -103,26 +67,26 @@ def create_pig_wood_block(position):
 	pig_body = pymunk.Body(
 		mass=pig_mass, moment=pig_inertia, body_type=pymunk.Body.DYNAMIC
 	)
-	pig_body.position = (position[0], position[1] - 10)
+	pig_body.position = (position[0], position[1] - settings.PIG_WOOD_OFFSET)
 	pig_shape = pymunk.Circle(pig_body, 20)
 	pig_shape.collision_type = settings.PIG_COLLISION_TYPE
 	state.pig_expression_states[pig_shape] = (
-		False, pygame.time.get_ticks() + random.randint(2000, 5000)
+		False, pygame.time.get_ticks() + random.randint(settings.PIG_LAUGH_MIN_MS, settings.PIG_LAUGH_MAX_MS)
 	)
-	pig_shape.elasticity = 0.5
-	pig_shape.friction = 0.5
+	pig_shape.elasticity = settings.PIG_ELASTICITY
+	pig_shape.friction = settings.PIG_FRICTION
 	pig_shape.color = settings.PIG_COLOR
 	pig_shape.filter = pymunk.ShapeFilter(
 		categories=settings.PIG_CATEGORY,
 		mask=0xFFFFFFFF ^ settings.PIG_WOOD_CATEGORY,
 	)
 
-	slide = pymunk.SlideJoint(wood_body, pig_body, (0, 0), (0, 0), 0, 100)
-	slide.bias_coef = 0.08
-	slide.max_force = 1800
+	slide = pymunk.SlideJoint(wood_body, pig_body, (0, 0), (0, 0), 0, settings.SLIDE_MAX_DISTANCE)
+	slide.bias_coef = settings.SLIDE_BIAS
+	slide.max_force = settings.SLIDE_MAX_FORCE
 	spring = pymunk.DampedSpring(
-		wood_body, pig_body, (0, 0), (0, 0), rest_length=18,
-		stiffness=22, damping=4,
+		wood_body, pig_body, (0, 0), (0, 0), settings.SPRING_REST_LENGTH,
+		stiffness=settings.SPRING_STIFFNESS, damping=settings.SPRING_DAMPING,
 	)
 
 	state.space.add(wood_body, *wood_shapes, pig_body, pig_shape, slide, spring)
@@ -135,10 +99,10 @@ def create_pig_wood_block(position):
 def ground():
 	body = pymunk.Body(body_type=pymunk.Body.STATIC)
 	shape = pymunk.Segment(
-		body, (0, settings.HEIGHT - 50), (settings.WIDTH, settings.HEIGHT - 50), 5
+		body, (0, settings.HEIGHT - settings.GROUND_HEIGHT), (settings.WIDTH, settings.HEIGHT - settings.GROUND_HEIGHT), 5
 	)
-	shape.elasticity = 0.5
-	shape.friction = 1.0
+	shape.elasticity = settings.BLOCK_ELASTICITY
+	shape.friction = settings.BLOCK_FRICTION
 	shape.color = (*settings.GROUND_COLOR, 255)
 	state.space.add(body, shape)
 
@@ -161,13 +125,19 @@ def destroy_environment():
 
 
 def generate_level(level_number=1):
-	destroy_environment()
-	for cell_x, cell_y, block_type in LEVEL_LAYOUTS[level_number]:
-		position = cell_to_position(cell_x, cell_y)
-		if block_type == "wood":
-			create_wood_block(position)
-		else:
-			create_pig_wood_block(position)
+    try:
+        layout = settings.LEVEL_LAYOUTS[int(level_number)]
+    except (KeyError, TypeError, ValueError) as error:
+        print(f"[levels] unknown level {level_number!r}, using level 1 ({error})")
+        layout = settings.LEVEL_LAYOUTS[1]
+
+    destroy_environment()
+    for cell_x, cell_y, block_type in layout:
+        position = cell_to_position(cell_x, cell_y)
+        if block_type == "wood":
+            create_wood_block(position)
+        else:
+            create_pig_wood_block(position)
 
 
 def reset_environment():

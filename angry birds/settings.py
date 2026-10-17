@@ -234,3 +234,15 @@ DAMPING = CONFIG["physics"]["damping"]
 GRAVITY = tuple(CONFIG["physics"]["gravity"])
 COLLISION_SLOP = CONFIG["physics"]["collision_slop"]
 COLLISION_BIAS = CONFIG["physics"]["collision_bias"]
+
+TRAJECTORY_FRAMES = CONFIG["bird"]["trajectory_frames"]
+TRAJECTORY_STEP = CONFIG["bird"]["trajectory_step"]
+TRAJECTORY_DOT_RADIUS = CONFIG["bird"]["trajectory_dot_radius"]
+TRAJECTORY_FLOOR_MARGIN = 120
+
+EXPLOSION_START_RADIUS = CONFIG["explosion"]["start_radius"]
+EXPLOSION_GROW_RADIUS = CONFIG["explosion"]["grow_radius"]
+EXPLOSION_MAX_ALPHA = CONFIG["explosion"]["max_alpha"]
+EXPLOSION_RING_WIDTH = CONFIG["explosion"]["ring_width"]
+
+FONT_SIZE_HUD = 32

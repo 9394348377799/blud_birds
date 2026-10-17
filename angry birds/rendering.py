@@ -22,32 +22,32 @@ def draw_trajectory_preview():
 	pull_x = settings.ANCHOR_POS[0] - state.ball_body.position.x
 	pull_y = settings.ANCHOR_POS[1] - state.ball_body.position.y
 	position_x, position_y = state.ball_body.position
-	velocity_x = pull_x * 8
-	velocity_y = pull_y * 8
+	velocity_x = pull_x * settings.LAUNCH_MULTIPLIER
+	velocity_y = pull_y * settings.LAUNCH_MULTIPLIER
 	gravity_x, gravity_y = state.space.gravity
-	simulation_dt = 1.0 / 60.0
+	simulation_dt = settings.SIMULATION_DT
 	damping = state.space.damping
 
-	for frame in range(250):
+	for frame in range(range(settings.TRAJECTORY_FRAMES)):
 		velocity_x *= math.pow(damping, simulation_dt)
 		velocity_y *= math.pow(damping, simulation_dt)
 		velocity_x += gravity_x * simulation_dt
 		velocity_y += gravity_y * simulation_dt
 		position_x += velocity_x * simulation_dt
 		position_y += velocity_y * simulation_dt
-		if position_y >= settings.HEIGHT - 120:
+		if position_y >= settings.HEIGHT - settings.TRAJECTORY_FLOOR_MARGIN:
 			break
-		if frame % 2 == 0:
+		if frame % settings.TRAJECTORY_STEP:
 			pygame.draw.circle(
 				state.screen, (255, 255, 255),
-				(int(position_x), int(position_y)), 3,
+				(int(position_x), int(position_y)), settings.TRAJECTORY_DOT_RADIUS,
 			)
 
 
 def draw_game():
 	screen = state.screen
 	screen.blit(state.background_image, (0, 0))
-	font = pygame.font.Font(None, 32)
+	font = pygame.font.Font(None, settings.FONT_SIZE_HUD)
 	attempts_label = font.render(f"Birds: {state.attempts_left}", True, (255, 255, 255))
 	screen.blit(attempts_label, (20, 20))
 	# draw_grid()
@@ -79,7 +79,7 @@ def draw_game():
 			laughing, next_change = state.pig_expression_states[shape]
 			if now >= next_change:
 				laughing = not laughing
-				next_change = now + random.randint(2000, 5000)
+				next_change = now + random.randint(settings.PIG_LAUGH_MIN_MS, settings.PIG_LAUGH_MAX_MS)
 				state.pig_expression_states[shape] = (laughing, next_change)
 			if laughing:
 				frame_index = (now // settings.PIG_LAUGH_FRAME_MS) % len(state.pig_laugh_frames)
@@ -98,8 +98,8 @@ def draw_game():
 		if age >= settings.EXPLOSION_DURATION:
 			continue
 		progress = age / settings.EXPLOSION_DURATION
-		radius = int(12 + 58 * progress)
-		alpha = int(220 * (1 - progress))
+		radius = int(settings.EXPLOSION_START_RADIUS + settings.EXPLOSION_GROW_RADIUS * progress)
+		alpha = int(settings.EXPLOSION_MAX_ALPHA * (1 - progress))
 		blast_surface = pygame.Surface(
 			(radius * 2 + 4, radius * 2 + 4), pygame.SRCALPHA
 		)
@@ -108,7 +108,7 @@ def draw_game():
 			(255, 150, 35, alpha),
 			(radius + 2, radius + 2),
 			radius,
-			width=4,
+			width=settings.EXPLOSION_RING_WIDTH,
 		)
 		screen.blit(
 			blast_surface,
