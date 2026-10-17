@@ -1,5 +1,5 @@
+"""Level construction: wood blocks, attached pigs, ground and level loading."""
 import random
-
 import pygame
 import pymunk
 import settings
@@ -7,15 +7,15 @@ from game_state import state
 
 
 def cell_to_position(cell_x, cell_y):
+	"""Convert a grid cell coordinate to a pixel position."""
 	return (
 		cell_x * settings.GRID_SIZE + settings.GRID_SIZE / 2,
 		cell_y * settings.GRID_SIZE + settings.GRID_SIZE / 2,
 	)
 
 
-
-
 def _create_wood_shell(body):
+	"""Build the four segments that make a hollow wood block."""
 	half_size = settings.BLOCK_SIZE / 2
 	thickness = settings.BLOCK_SHELL_THICKNESS
 	left, right = -half_size, half_size
@@ -34,6 +34,7 @@ def _create_wood_shell(body):
 
 
 def create_wood_block(position):
+	"""Create a destructible wood block at the given position."""
 	size = settings.BLOCK_SIZE
 	mass = settings.BLOCK_MASS
 	inertia = pymunk.moment_for_box(mass, (size, size))
@@ -47,6 +48,7 @@ def create_wood_block(position):
 
 
 def create_pig_wood_block(position):
+	"""Create a wood block with a pig attached by a slide joint and spring."""
 	size = settings.BLOCK_SIZE
 	mass = settings.BLOCK_MASS
 	inertia = pymunk.moment_for_box(mass, (size, size))
@@ -91,6 +93,7 @@ def create_pig_wood_block(position):
 
 
 def ground():
+	"""Add the static ground segment."""
 	body = pymunk.Body(body_type=pymunk.Body.STATIC)
 	shape = pymunk.Segment(
 		body, (0, settings.HEIGHT - settings.GROUND_HEIGHT), (settings.WIDTH, settings.HEIGHT - settings.GROUND_HEIGHT), 5
@@ -102,6 +105,7 @@ def ground():
 
 
 def destroy_environment():
+	"""Remove every block, pig, constraint and tracking entry."""
 	for constraint in state.environment_constraints:
 		state.space.remove(constraint)
 	state.environment_constraints.clear()
@@ -117,7 +121,7 @@ def destroy_environment():
 	state.pig_body = None
 	state.pig_shape = None
 
-
+"""Build the requested level, falling back to level 1 if unknown.""" 
 def generate_level(level_number=1):
     try:
         layout = settings.LEVEL_LAYOUTS[int(level_number)]
@@ -135,4 +139,5 @@ def generate_level(level_number=1):
 
 
 def reset_environment():
+	"""Rebuild the environment."""
 	generate_level()

@@ -1,5 +1,5 @@
+"""Physics rules: explosions, collisions, breaking blocks and shot settling."""
 import math
-
 import pygame
 import pymunk
 import settings
@@ -8,10 +8,12 @@ from game_state import state
 
 
 def is_valid_position(position):
+	"""Return False when a position contains NaN."""
 	return not (math.isnan(position[0]) or math.isnan(position[1]))
 
 
 def trigger_explosion(position):
+	"""Push nearby dynamic bodies away from the blast and queue the visual."""
 	state.explosions.append((position, pygame.time.get_ticks()))
 	for body, _shapes in state.environment_objects:
 		if body.body_type != pymunk.Body.DYNAMIC:
@@ -27,6 +29,7 @@ def trigger_explosion(position):
 
 
 def on_bird_block_collision(arbiter, collision_space, data):
+	"""Mark the first block the bird hits and arm the explosion."""
 	if (
 		not state.is_launched
 		or state.explosion_triggered
@@ -48,6 +51,7 @@ def on_bird_block_collision(arbiter, collision_space, data):
 
 
 def blocks_breaking():
+	"""Remove wood blocks the bird hit that are moving faster than the break speed."""
 	for body, shapes in list(state.environment_objects):
 		if body.body_type != pymunk.Body.DYNAMIC:
 			continue
@@ -64,6 +68,7 @@ def blocks_breaking():
 
 
 def scene_is_slow():
+	"""Return True when every dynamic body has effectively stopped."""
 	bodies = [body for body, _shapes in state.environment_objects]
 	if state.ball_body is not None:
 		bodies.append(state.ball_body)
@@ -75,6 +80,7 @@ def scene_is_slow():
 
 
 def finish_shot():
+	"""End the shot, then decide win, loss, or load the next bird."""
 	if not state.shot_active:
 		return
 
@@ -92,6 +98,7 @@ def finish_shot():
 
 
 def on_pig_impact(arbiter, collision_space, data):
+	"""Queue pigs that took a hard enough impact for removal."""
 	pig_shapes = [
 		shape for shape in arbiter.shapes
 		if shape.collision_type == settings.PIG_COLLISION_TYPE
@@ -101,6 +108,7 @@ def on_pig_impact(arbiter, collision_space, data):
 
 
 def pigs_dying():
+	"""Remove queued pigs, their constraints, and play the death sound."""
 	for pig_shape in list(state.pending_pig_deaths):
 		pig_body = pig_shape.body
 		for constraint in list(state.environment_constraints):
@@ -120,6 +128,7 @@ def pigs_dying():
 
 
 def setup_collision_handlers():
+	"""Register the collision handlers on the physics space."""
 	state.space.on_collision(
 		None,
 		None,
@@ -129,6 +138,7 @@ def setup_collision_handlers():
 
 
 def update(dt):
+	"""Advance the simulation one frame and run the per-frame rules."""
 	if state.is_dragging:
 		mouse_x, mouse_y = pygame.mouse.get_pos()
 		delta_x = mouse_x - settings.ANCHOR_POS[0]

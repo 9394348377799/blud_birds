@@ -1,5 +1,6 @@
-import math
+"""Entry point for blud birds: sets up pygame and runs the main loop."""
 
+import math
 import assets
 import characters
 import levels
@@ -13,6 +14,7 @@ from game_state import state
 
 
 def main():
+    """Run the game until the window is closed."""
     pygame.init()
     state.screen = pygame.display.set_mode((settings.WIDTH, settings.HEIGHT))
     pygame.display.set_caption(settings.CAPTION)

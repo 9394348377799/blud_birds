@@ -1,9 +1,12 @@
+"""Shared mutable game state."""
 import pymunk
 import settings
 
 
 class GameState:
+	"""Container for all runtime state the game needs."""
 	def __init__(self):
+		"""Create the physics space and initialise every state attribute."""
 		self.space = pymunk.Space()
 		self.space.damping = 0.82
 		self.space.gravity = (0, 700)

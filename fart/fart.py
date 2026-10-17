@@ -1,14 +1,8 @@
-import tkinter as tk
-from tkinter import ttk
 import random
-import pygame
+import tkinter as tk
 from pathlib import Path
 
-from tkinter import Toplevel
-import threading
-import sys
-
-
+import pygame
 
 
 class App:
@@ -62,7 +56,7 @@ class App:
         activebackground="#E69797", 
         relief=tk.FLAT, 
         bd=0, 
-        text=f"Fart!", 
+        text="Fart!", 
         command=self.increase_score)
         
         self.score_button.pack(
@@ -92,7 +86,7 @@ class App:
         self.main_canvas.itemconfig(self.fart_block, fill=random.choice(["#934361", "#889343", "#439376", "#4E4393"]))
         # update the score button label
         try:
-            self.score_button.config(text=f"Fart! ")
+            self.score_button.config(text="Fart! ")
         except Exception:
             pass
 

@@ -1,3 +1,5 @@
+"""Central configuration, loaded from config.json with built in defaults."""
+
 import json
 import os
 
@@ -94,6 +96,7 @@ DEFAULT_CONFIG = {
 }
 
 def _merge(base, override):
+    """Return base recursively updated with values from override"""
     merged = dict(base)
     for key, value in override.items():
         if isinstance(value, dict) and key in merged:
@@ -104,6 +107,7 @@ def _merge(base, override):
     return merged
 
 def _validate(value, default):
+    """Return value only when it matches the default's type."""
     if isinstance(default, dict):
         source = value if isinstance(value, dict) else {}
         return {
@@ -127,6 +131,7 @@ def _validate(value, default):
     return value if type(value) is type(default) else default
 
 def load_config(path=None):
+    """Load config.json over the defaults; never raises."""
     if path is None:
         here = os.path.dirname(os.path.abspath(__file__))
         path = os.path.join(here, "..", "config.json")

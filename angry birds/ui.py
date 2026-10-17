@@ -1,3 +1,4 @@
+"""Menu and level-select UI built on pygame_gui."""
 import pygame
 import pygame_gui
 import settings
@@ -7,6 +8,7 @@ from levels import generate_level
 
 
 def initialize():
+	"""Create the menu manager and buttons, hidden until needed."""
 	state.ui_manager = pygame_gui.UIManager((settings.WIDTH, settings.HEIGHT))
 	state.level_buttons = {
 		level_number: pygame_gui.elements.UIButton(
@@ -37,6 +39,7 @@ def initialize():
 
 
 def process_event(event):
+	"""Handle a pygame event; return True when the UI consumed it."""
 	ui_consumed = state.ui_manager.process_events(event)
 	if event.type == pygame_gui.UI_BUTTON_PRESSED:
 		if event.ui_element == state.start_button:
@@ -69,5 +72,6 @@ def process_event(event):
 
 
 def update_and_draw(time_delta):
+	"""Advance pygame_gui and draw the current UI."""
 	state.ui_manager.update(time_delta)
 	state.ui_manager.draw_ui(state.screen)

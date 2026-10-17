@@ -7,6 +7,7 @@ from game_state import state
 
 
 def create_bird():
+	"""Creation and removal of the bird and pig physics bodies."""
 	radius = settings.BIRD_RADIUS
 	state.ball_body = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
 	state.ball_body.position = settings.ANCHOR_POS
@@ -20,6 +21,7 @@ def create_bird():
 
 
 def destroy_bird():
+	"""Remove the bird from the physics space, if one exists."""
 	if state.ball_body is not None and state.ball_shape is not None:
 		state.space.remove(state.ball_body, state.ball_shape)
 		state.ball_body = None
@@ -29,11 +31,13 @@ def destroy_bird():
 
 
 def reset_bird():
+	"""Destroy and recreate the bird at the anchor."""
 	destroy_bird()
 	create_bird()
 
 
 def create_piggy(position):
+	"""Create a free-standing pig at the given position and track it as a target."""
 	mass = settings.PIG_MASS
 	radius = settings.PIG_RADIUS
 	inertia = pymunk.moment_for_circle(mass, 0, radius)
