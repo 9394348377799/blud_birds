@@ -1,5 +1,6 @@
 """Physics rules: explosions, collisions, breaking blocks and shot settling."""
 import math
+
 import pygame
 import pymunk
 import settings

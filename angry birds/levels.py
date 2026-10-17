@@ -1,5 +1,6 @@
 """Level construction: wood blocks, attached pigs, ground and level loading."""
 import random
+
 import pygame
 import pymunk
 import settings

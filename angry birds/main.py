@@ -1,6 +1,7 @@
 """Entry point for blud birds: sets up pygame and runs the main loop."""
 
 import math
+
 import assets
 import characters
 import levels
