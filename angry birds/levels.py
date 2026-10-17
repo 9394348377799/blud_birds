@@ -8,35 +8,6 @@ import settings
 from game_state import state
 
 
-LEVEL_LAYOUTS = {
-	1: ((12, 10, "wood"), 
-	    (13, 10, "wood"), 
-		(12.5, 9, "pig_wood")),
-	2: (
-		(12, 10, "wood"),
-		(13, 10, "pig_wood"),
-		(12, 9, "wood"),
-		(13, 9, "wood"),
-		(12.5, 8, "pig_wood"),
-	),
-	3: (
-		(11, 10, "wood"),
-		(12, 10, "wood"),
-		(13, 10, "pig_wood"),
-		(14, 10, "wood"),
-		(15, 10, "wood"),
-		(11.5, 9, "pig_wood"),
-		(12.5, 9, "wood"),
-		(13.5, 9, "wood"),
-		(14.5, 9, "wood"),
-		(12, 8, "wood"),
-		(13, 8, "pig_wood"),
-		(14, 8, "wood"),
-		(12.5, 7, "wood"),
-		(13.5, 7, "wood"),
-		(13, 6, "pig_wood"),
-	),
-}
 
 
 def snap_to_grid(position):
@@ -88,7 +59,7 @@ def choose_spawn_cell(used_cells):
 
 def _create_wood_shell(body):
 	half_size = settings.BLOCK_SIZE / 2
-	thickness = 3.5 / 2
+	thickness = settings.BLOCK_SHELL_THICKNESS
 	left, right = -half_size, half_size
 	top, bottom = -half_size, half_size
 	shapes = [
@@ -127,7 +98,7 @@ def create_pig_wood_block(position):
 	wood_body.position = position
 	wood_shapes = _create_wood_shell(wood_body)
 
-	pig_mass = 0.2
+	pig_mass = settings.PIG_ATTACHED_MASS
 	pig_inertia = pymunk.moment_for_circle(pig_mass, 0, 20)
 	pig_body = pymunk.Body(
 		mass=pig_mass, moment=pig_inertia, body_type=pymunk.Body.DYNAMIC

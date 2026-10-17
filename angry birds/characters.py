@@ -8,14 +8,13 @@ from game_state import state
 
 
 def create_bird():
-	mass = 0.5
-	radius = 15
-	inertia = pymunk.moment_for_circle(mass, 0, radius)
+	mass = settings.BIRD_MASS
+	radius = settings.BIRD_RADIUS
 	state.ball_body = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
 	state.ball_body.position = settings.ANCHOR_POS
 	state.ball_shape = pymunk.Circle(state.ball_body, radius)
-	state.ball_shape.elasticity = 0.7
-	state.ball_shape.friction = 0.5
+	state.ball_shape.elasticity = settings.BIRD_ELASTICITY
+	state.ball_shape.friction = settings.BIRD_FRICTION
 	state.ball_shape.color = settings.BIRD_COLOR
 	state.space.add(state.ball_body, state.ball_shape)
 	state.is_launched = False
@@ -37,8 +36,8 @@ def reset_bird():
 
 
 def create_piggy(position):
-	mass = 0.5
-	radius = 20
+	mass = settings.PIG_MASS
+	radius = settings.PIG_RADIUS
 	inertia = pymunk.moment_for_circle(mass, 0, radius)
 	pig_body = pymunk.Body(mass=mass, moment=inertia, body_type=pymunk.Body.DYNAMIC)
 	pig_body.position = position
@@ -47,8 +46,8 @@ def create_piggy(position):
 	state.pig_expression_states[pig_shape] = (
 		False, pygame.time.get_ticks() + random.randint(2000, 5000)
 	)
-	pig_shape.elasticity = 0.5
-	pig_shape.friction = 0.5
+	pig_shape.elasticity = settings.PIG_ELASTICITY
+	pig_shape.friction = settings.PIG_FRICTION
 	pig_shape.color = settings.PIG_COLOR
 	pig_shape.filter = pymunk.ShapeFilter(
 		categories=settings.PIG_CATEGORY,

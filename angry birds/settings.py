@@ -164,12 +164,47 @@ BIRD_COLOR = (51, 51, 255, 255)
 PIG_COLOR = (254, 204, 153, 255)
 WOOD_COLOR = (150, 90, 40, 255)
 GRID_COLOR = (100, 100, 100, 255)
+GROUND_HEIGHT = 50
+GROUND_THICKNESS = 5
+PIG_WOOD_OFFSET = 10
+SLIDE_MAX_DISTANCE = 100
+SLIDE_BIAS = 0.08
+SLIDE_MAX_FORCE = 1800
+SPRING_REST_LENGTH = 18
+SPRING_STIFFNESS = 22
+SPRING_DAMPING = 4
 
 BIRD_MASS = CONFIG["bird"]["mass"]
 BIRD_RADIUS = CONFIG["bird"]["radius"]
+BIRD_ELASTICITY = CONFIG["bird"]["elasticity"]
+BIRD_FRICTION = CONFIG["bird"]["friction"]
 LAUNCH_MULTIPLIER = CONFIG["bird"]["launch_multiplier"]
 GRAB_RADIUS = CONFIG["bird"]["grab_radius"]
 
+PIG_MASS = CONFIG["pig"]["mass"]
+PIG_RADIUS = CONFIG["pig"]["radius"]
+PIG_ELASTICITY = CONFIG["pig"]["elasticity"]
+PIG_FRICTION = CONFIG["pig"]["friction"]
+PIG_LAUGH_MIN_MS = CONFIG["pig"]["laugh_min_ms"]
+PIG_LAUGH_MAX_MS = CONFIG["pig"]["laugh_max_ms"]
+PIG_ATTACHED_MASS = CONFIG["pig"]["attached_mass"]
+BLOCK_SHELL_THICKNESS = CONFIG["blocks"]["shell_thickness"]
+SPAWN = CONFIG["spawn"]
+
+LEVEL_LAYOUTS = {
+    int(number): [tuple(entry) for entry in entries]
+    for number, entries in CONFIG["levels"].items()
+}
+
+MAX_PULL = CONFIG["bird"]["max_pull"]
+OFFSCREEN_MARGIN = CONFIG["bird"]["offscreen_margin"]
+
+SETTLE_VELOCITY = CONFIG["physics"]["settle_velocity"]
+SETTLE_ANGULAR_VELOCITY = CONFIG["physics"]["settle_angular_velocity"]
+SETTLE_TIME = CONFIG["physics"]["settle_time"]
+
+EXPLOSION_STRENGTH = CONFIG["explosion"]["strength"]
+BLOCK_BREAK_VELOCITY = CONFIG["blocks"]["break_velocity"]
 
 
 BLOCK_SIZE = CONFIG["blocks"]["size"]
@@ -194,3 +229,8 @@ ATTEMPTS = CONFIG["game"]["attempts"]
 LEVEL_COUNT = CONFIG["game"]["level_count"]
 ANCHOR_POS = tuple(CONFIG["anchor"])
 PIG_POS = (800, 570)
+
+DAMPING = CONFIG["physics"]["damping"]
+GRAVITY = tuple(CONFIG["physics"]["gravity"])
+COLLISION_SLOP = CONFIG["physics"]["collision_slop"]
+COLLISION_BIAS = CONFIG["physics"]["collision_bias"]

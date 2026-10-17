@@ -1,4 +1,5 @@
 import pymunk
+import settings
 
 
 class GameState:
@@ -22,6 +23,12 @@ class GameState:
 		self.level_buttons = {}
 		self.menu_button = None
 		self.selected_level = None
+
+		self.space.damping = settings.DAMPING
+		self.space.gravity = settings.GRAVITY
+		self.space.collision_slop = settings.COLLISION_SLOP
+		self.space.collision_bias = settings.COLLISION_BIAS
+
 
 		self.ball_body = None
 		self.ball_shape = None

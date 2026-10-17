@@ -22,7 +22,7 @@ def trigger_explosion(position):
 		if distance >= settings.EXPLOSION_RADIUS:
 			continue
 		direction = offset.normalized() if distance > 0 else pymunk.Vec2d(0, -1)
-		strength = 25 * (1 - distance / settings.EXPLOSION_RADIUS)
+		strength = settings.EXPLOSION_STRENGTH * (1 - distance / settings.EXPLOSION_RADIUS)
 		body.apply_impulse_at_world_point(direction * strength, body.position)
 		state.blocks_hit_by_bird.add(body)
 
@@ -134,7 +134,7 @@ def update(dt):
 		delta_x = mouse_x - settings.ANCHOR_POS[0]
 		delta_y = mouse_y - settings.ANCHOR_POS[1]
 		distance = math.hypot(delta_x, delta_y)
-		max_pull = 125
+		max_pull = settings.MAX_PULL
 		if distance > max_pull and distance > 0:
 			delta_x = delta_x / distance * max_pull
 			delta_y = delta_y / distance * max_pull
@@ -156,9 +156,9 @@ def update(dt):
 	if state.ball_body and state.is_launched:
 		position = state.ball_body.position
 		if (
-			position.y > settings.HEIGHT + 100
-			or position.x > settings.WIDTH + 100
-			or position.x < -100
+			position.y > settings.HEIGHT + settings.OFFSCREEN_MARGIN
+			or position.x > settings.WIDTH + settings.OFFSCREEN_MARGIN
+			or position.x < -settings.OFFSCREEN_MARGIN
 		):
 			destroy_bird()
 
@@ -171,5 +171,5 @@ def update(dt):
 			state.settled_time += dt
 		else:
 			state.settled_time = 0.0
-		if state.settled_time >= 1.0:
+		if state.settled_time >= settings.SETTLE_TIME:
 			finish_shot()
