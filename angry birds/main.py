@@ -31,7 +31,7 @@ def main():
 
     running = True
     while running:
-        time_delta = clock.tick(settings.FPS)
+        time_delta = clock.tick(settings.FPS) / 1000.0
         dt = settings.SIMULATION_DT
 
         for event in pygame.event.get():
@@ -57,7 +57,7 @@ def main():
                         mouse_position[0] - state.ball_body.position.x,
                         mouse_position[1] - state.ball_body.position.y,
                     )
-                    if distance < 30:
+                    if distance < settings.GRAB_RADIUS:
                         state.is_dragging = True
                         state.ball_body.body_type = pymunk.Body.KINEMATIC
             elif event.type == pygame.MOUSEBUTTONUP and state.is_dragging:
@@ -81,20 +81,27 @@ def main():
                 state.is_dragging = False
                 state.settled_time = 0.0
                 state.shot_active = True
+
         if state.game_state == "playing":
             physics.update(dt)
             rendering.draw_game()
+            if not state.target_blocks:
+                state.game_state = "won"
         else:
             state.screen.blit(state.background_image, (0, 0))
             if state.game_state in ("won", "lost"):
                 message = (
-                    "Level completed!" if state.game_state == "won" else "Out of birds"
+                    "Level completed!"
+                    if state.game_state == "won"
+                    else "Out of birds"
                 )
                 font = pygame.font.Font(None, settings.FONT_SIZE_MESSAGE)
                 text = font.render(message, True, (255, 255, 255))
                 state.screen.blit(
                     text,
-                    text.get_rect(center=(settings.WIDTH // 2, settings.HEIGHT // 2)),
+                    text.get_rect(
+                        center=(settings.WIDTH // 2, settings.HEIGHT // 2)
+                    ),
                 )
 
         ui.update_and_draw(time_delta)
