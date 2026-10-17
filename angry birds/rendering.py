@@ -28,7 +28,7 @@ def draw_trajectory_preview():
 	simulation_dt = settings.SIMULATION_DT
 	damping = state.space.damping
 
-	for frame in range(range(settings.TRAJECTORY_FRAMES)):
+	for frame in range(settings.TRAJECTORY_FRAMES):
 		velocity_x *= math.pow(damping, simulation_dt)
 		velocity_y *= math.pow(damping, simulation_dt)
 		velocity_x += gravity_x * simulation_dt
