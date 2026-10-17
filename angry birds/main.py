@@ -1,12 +1,11 @@
 import math
 
-import pygame
-import pymunk
-
 import assets
 import characters
 import levels
 import physics
+import pygame
+import pymunk
 import rendering
 import settings
 import ui

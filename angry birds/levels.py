@@ -1,15 +1,9 @@
-import math
 import random
 
 import pygame
 import pymunk
-
 import settings
 from game_state import state
-
-
-
-
 
 
 def cell_to_position(cell_x, cell_y):

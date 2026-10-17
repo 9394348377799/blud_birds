@@ -2,7 +2,6 @@ import math
 
 import pygame
 import pymunk
-
 import settings
 from characters import destroy_bird
 from game_state import state

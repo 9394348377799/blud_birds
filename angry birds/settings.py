@@ -137,7 +137,7 @@ def load_config(path=None):
     except (FileNotFoundError, PermissionError, OSError) as error:
         print(f"[config] using built-in defaults ({error})")
         return _validate({}, DEFAULT_CONFIG)
-    except (json.JSONDecodeError, UnicodeDecodeError) as error:
+    except (json.JSONDecodeError, UnicodeDecodeError):
         print("[config] config.json is invalid, using defaults")
         return _validate({}, DEFAULT_CONFIG)
     

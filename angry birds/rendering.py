@@ -3,7 +3,6 @@ import random
 
 import pygame
 import pymunk.pygame_util
-
 import settings
 from game_state import state
 

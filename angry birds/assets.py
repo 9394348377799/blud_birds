@@ -3,7 +3,6 @@
 import os
 
 import pygame
-
 import settings
 from game_state import state
 

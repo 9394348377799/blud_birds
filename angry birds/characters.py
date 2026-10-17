@@ -2,13 +2,11 @@ import random
 
 import pygame
 import pymunk
-
 import settings
 from game_state import state
 
 
 def create_bird():
-	mass = settings.BIRD_MASS
 	radius = settings.BIRD_RADIUS
 	state.ball_body = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
 	state.ball_body.position = settings.ANCHOR_POS

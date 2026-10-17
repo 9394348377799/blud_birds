@@ -1,6 +1,5 @@
 import pygame
 import pygame_gui
-
 import settings
 from characters import reset_bird
 from game_state import state
