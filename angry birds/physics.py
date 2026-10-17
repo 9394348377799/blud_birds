@@ -55,16 +55,19 @@ def blocks_breaking():
     for body, shapes in list(state.environment_objects):
         if body.body_type != pymunk.Body.DYNAMIC:
             continue
-        if len(shapes) == 4 and body in state.blocks_hit_by_bird:
-            if body.velocity.length > 200:
-                for constraint in list(state.environment_constraints):
-                    if constraint.a is body or constraint.b is body:
-                        state.space.remove(constraint)
-                        state.environment_constraints.remove(constraint)
-                state.space.remove(body, *shapes)
-                state.environment_objects.remove((body, shapes))
-                state.blocks_hit_by_bird.discard(body)
-                state.target_blocks.discard(body)
+        if (
+            len(shapes) == 4
+            and body in state.blocks_hit_by_bird
+            and body.velocity.length > settings.BLOCK_BREAK_VELOCITY
+        ):
+            for constraint in list(state.environment_constraints):
+                if constraint.a is body or constraint.b is body:
+                    state.space.remove(constraint)
+                    state.environment_constraints.remove(constraint)
+            state.space.remove(body, *shapes)
+            state.environment_objects.remove((body, shapes))
+            state.blocks_hit_by_bird.discard(body)
+            state.target_blocks.discard(body)
 
 
 def scene_is_slow():
