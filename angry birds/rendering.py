@@ -1,12 +1,12 @@
+"""Drawing: background, HUD, trajectory preview, bodies, pigs and explosions."""
 import math
 import random
-
 import pygame
 import pymunk.pygame_util
 import settings
 from game_state import state
 
-
+"""Draw a reference grid (debug aid)."""
 def draw_grid():
     for x in range(0, settings.WIDTH + settings.GRID_SIZE, settings.GRID_SIZE):
         pygame.draw.line(state.screen, settings.GRID_COLOR, (x, 0), (x, settings.HEIGHT), 1)
@@ -15,6 +15,7 @@ def draw_grid():
 
 
 def draw_trajectory_preview():
+	"""Trace where the bird would fly at the current pull."""
 	if not state.ball_body or not state.is_dragging:
 		return
 
@@ -44,6 +45,7 @@ def draw_trajectory_preview():
 
 
 def draw_game():
+	"""Render one frame of the playing state."""
 	screen = state.screen
 	screen.blit(state.background_image, (0, 0))
 	font = pygame.font.Font(None, settings.FONT_SIZE_HUD)
