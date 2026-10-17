@@ -1,4 +1,3 @@
-
 import os
 import pygame
 import settings
@@ -60,6 +59,4 @@ def load_assets():
 
     state.bird_launch_sound = _load_sound("birdflynoise.mp3")
     state.pig_death_sound = _load_sound("barfer.mp3")
-    state.pig_laugh_sound = _load_sound(
-        "lasghter(1).mp3", settings.PIG_LAUGH_VOLUME
-    )
+    state.pig_laugh_sound = _load_sound("lasghter(1).mp3", settings.PIG_LAUGH_VOLUME)

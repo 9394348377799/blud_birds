@@ -31,7 +31,7 @@ def main():
 
     running = True
     while running:
-        time_delta = clock.tick(settings.FPS) 
+        time_delta = clock.tick(settings.FPS)
         dt = settings.SIMULATION_DT
 
         for event in pygame.event.get():
@@ -68,10 +68,11 @@ def main():
                 state.ball_body.body_type = pymunk.Body.DYNAMIC
                 state.ball_body.mass = settings.BIRD_MASS
                 state.ball_body.moment = pymunk.moment_for_circle(
-                    settings.BIRD_MASS, 
-                    0, 
-                    settings.BIRD_RADIUS)
-                state.ball_body.velocity = tuple(coord * settings.LAUNCH_MULTIPLIER for coord in pull_vector)
+                    settings.BIRD_MASS, 0, settings.BIRD_RADIUS
+                )
+                state.ball_body.velocity = tuple(
+                    coord * settings.LAUNCH_MULTIPLIER for coord in pull_vector
+                )
                 state.attempts_left -= 1
                 state.is_launched = True
                 if state.bird_launch_sound is not None:
@@ -86,10 +87,15 @@ def main():
         else:
             state.screen.blit(state.background_image, (0, 0))
             if state.game_state in ("won", "lost"):
-                message = "Level completed!" if state.game_state == "won" else "Out of birds"
+                message = (
+                    "Level completed!" if state.game_state == "won" else "Out of birds"
+                )
                 font = pygame.font.Font(None, settings.FONT_SIZE_MESSAGE)
                 text = font.render(message, True, (255, 255, 255))
-                state.screen.blit(text, text.get_rect(center=(settings.WIDTH // 2, settings.HEIGHT // 2)))
+                state.screen.blit(
+                    text,
+                    text.get_rect(center=(settings.WIDTH // 2, settings.HEIGHT // 2)),
+                )
 
         ui.update_and_draw(time_delta)
         pygame.display.flip()
