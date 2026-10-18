@@ -10,10 +10,11 @@ This is "blud birds", an angry birds knock off. This repository is coded within 
 - Explosion radius    -> inverse-distance force falloff
 - Pig mass vs wood    -> collision response between bodies
 
+## HOW TO RUN:
+- Install Python.
+- Install the required external libraries.
+- Open the project directory in your IDE.
+- Run main.py.
 
 
 
-
-## Misc
-
-Please ignore the "Fart" sub-file. By mistake the repository was committed with this folder. It is not relevant to the project.
