@@ -16,5 +16,7 @@ This is "blud birds", an angry birds knock off. This repository is coded within 
 - Open the project directory in your IDE.
 - Run main.py.
 
+## EXE
+- Open the angry birds directory, go to dist, and install "blud birds.exe"
 
 
