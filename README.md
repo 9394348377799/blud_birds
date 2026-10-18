@@ -10,10 +10,14 @@ This is "blud birds", an angry birds knock off. This repository is coded within 
 - Explosion radius    -> inverse-distance force falloff
 - Pig mass vs wood    -> collision response between bodies
 
-
+## HOW TO RUN:
+- No external libraries are required to run the game.
+- If you wish to alter the source code and run this from VSCODE or another ide, you will need:
+- Pymunk, Pygame, Settings, OS, Maths, PyGame_GUI, and random.
+- Please run the game from the "main.py" file inside of your IDE.
 
 
 
 ## Misc
 
-Please ignore the "Fart" sub-file. By mistake the repository was committed with this folder. It is not relevant to the project.
+Please ignore the "fart" sub-file. By mistake the repository was committed with this folder. It is not relevant to the project.
