@@ -19,4 +19,6 @@ This is "blud birds", an angry birds knock off. This repository is coded within 
 ## EXE
 - Open the angry birds directory, go to dist, and install "blud birds.exe"
 
-
+## HOW TO PLAY
+- Self explanatory. Break all the boxes, kill all the pigs to win.
+- If you get soft locked, press "E" to reset the environment to retry.
