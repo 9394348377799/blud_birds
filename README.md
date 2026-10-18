@@ -18,6 +18,3 @@ This is "blud birds", an angry birds knock off. This repository is coded within 
 
 
 
-## Misc
-
-Please ignore the "fart" sub-file. By mistake the repository was committed with this folder. It is not relevant to the project.
