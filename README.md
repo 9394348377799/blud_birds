@@ -11,10 +11,10 @@ This is "blud birds", an angry birds knock off. This repository is coded within 
 - Pig mass vs wood    -> collision response between bodies
 
 ## HOW TO RUN:
-- No external libraries are required to run the game.
-- If you wish to alter the source code and run this from VSCODE or another ide, you will need:
-- Pymunk, Pygame, Settings, OS, Maths, PyGame_GUI, and random.
-- Please run the game from the "main.py" file inside of your IDE.
+- Install Python.
+- Install the required external libraries.
+- Open the project directory in your IDE.
+- Run main.py.
 
 
 
