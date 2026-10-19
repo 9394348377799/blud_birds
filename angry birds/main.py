@@ -22,6 +22,8 @@ def main():
     clock = pygame.time.Clock()
 
     assets.load_assets()
+    if state.background_ost is not None:
+        state.background_ost.play(loops=-1)
     ui.initialize()
 
     levels.ground()

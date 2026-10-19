@@ -99,13 +99,13 @@ def draw_game():
                     settings.PIG_LAUGH_MIN_MS, settings.PIG_LAUGH_MAX_MS
                 )
                 state.pig_expression_states[shape] = (laughing, next_change)
+                if laughing and state.pig_laugh_sound is not None:
+                    state.pig_laugh_sound.play()
             if laughing:
                 frame_index = (now // settings.PIG_LAUGH_FRAME_MS) % len(
                     state.pig_laugh_frames
                 )
                 pig_image = state.pig_laugh_frames[frame_index]
-                if state.pig_laugh_sound is not None:
-                    state.pig_laugh_sound.play()
 
             else:
                 pig_image = state.pig_image

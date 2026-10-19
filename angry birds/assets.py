@@ -55,9 +55,11 @@ def load_assets():
 
     try:
         pygame.mixer.init()
+        pygame.mixer.set_num_channels(32)
     except pygame.error as error:
         print(f"[assets] audio disabled ({error})")
 
+    state.background_ost = _load_sound("theostaot.mp3")
     state.bird_launch_sound = _load_sound("birdflynoise.mp3")
     state.pig_death_sound = _load_sound("barfer.mp3")
     state.pig_laugh_sound = _load_sound("lasghter(1).mp3", settings.PIG_LAUGH_VOLUME)
