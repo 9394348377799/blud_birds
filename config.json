@@ -1,4 +1,5 @@
 {
+  "background_ost_volume": 0.2,
   "window": {
     "width": 1080,
     "height": 720,
@@ -30,7 +31,8 @@
     "offscreen_margin": 100,
     "trajectory_frames": 250,
     "trajectory_step": 2,
-    "trajectory_dot_radius": 3
+    "trajectory_dot_radius": 3,
+    "bird_ahhhena_volume": 1
   },
   "pig": {
     "mass": 0.5,

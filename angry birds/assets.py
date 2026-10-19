@@ -59,7 +59,7 @@ def load_assets():
     except pygame.error as error:
         print(f"[assets] audio disabled ({error})")
 
-    state.background_ost = _load_sound("theostaot.mp3")
-    state.bird_launch_sound = _load_sound("birdflynoise.mp3")
+    state.background_ost = _load_sound("theostaot.mp3", settings.BACKGROUND_OST_VOLUME)
+    state.bird_launch_sound = _load_sound("birdflynoise.mp3", settings.BIRD_AHHHENA_VOLUME)
     state.pig_death_sound = _load_sound("barfer.mp3")
     state.pig_laugh_sound = _load_sound("lasghter(1).mp3", settings.PIG_LAUGH_VOLUME)

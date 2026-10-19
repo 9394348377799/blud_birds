@@ -4,6 +4,7 @@ import json
 import os
 
 DEFAULT_CONFIG = {
+    "background_ost_volume": 0.2,
     "window": {"width": 1080, "height": 720, "caption": "blud birds", "fps": 60},
     "game": {"attempts": 3, "level_count": 3},
     "anchor": [175, 450],
@@ -28,6 +29,7 @@ DEFAULT_CONFIG = {
         "trajectory_frames": 250,
         "trajectory_step": 2,
         "trajectory_dot_radius": 3,
+        "bird_ahhhena_volume": 1,
     },
     "pig": {
         "mass": 0.5,
@@ -260,6 +262,8 @@ FONT_SIZE_HUD = 32
 BUTTON_SIZE = (150, 50)
 LEVEL_BUTTON_SPACING = 70
 
+BACKGROUND_OST_VOLUME = CONFIG["background_ost_volume"]
+BIRD_AHHHENA_VOLUME = CONFIG["bird"]["bird_ahhhena_volume"]
 BIRD_ICON_SIZE = 36
 PIG_ICON_SIZE = 48
 PIG_LAUGH_FRAME_COUNT = 2
